@@ -1,0 +1,64 @@
+[
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=loklok.com&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/tuan041/repo",
+        "fileSize": 26567,
+        "status": 1,
+        "language": "vi",
+        "authors": [
+            "TuaSan"
+        ],
+        "tvTypes": [
+            "AsianDrama",
+            "Anime",
+            "TvSeries",
+            "Movie"
+        ],
+        "version": 1,
+        "internalName": "LoklokVn",
+        "description": "Best extension that base on Loklok app API",
+        "url": "https://raw.githubusercontent.com/tuan041/repo/builds/LoklokVn.cs3",
+        "name": "LoklokVn"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=https://phimnhua.com&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/tuan041/repo",
+        "fileSize": 12897,
+        "status": 1,
+        "language": "vi",
+        "authors": [
+            "TuaSan"
+        ],
+        "tvTypes": [
+            "TvSeries",
+            "Movie"
+        ],
+        "version": 1,
+        "internalName": "Phim1080Provider",
+        "url": "https://raw.githubusercontent.com/tuan041/repo/builds/Phim1080Provider.cs3",
+        "name": "Phim1080Provider"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=phimmoichill.net&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/tuan041/repo",
+        "fileSize": 15382,
+        "status": 1,
+        "language": "vi",
+        "authors": [
+            
+        ],
+        "tvTypes": [
+            "AsianDrama",
+            "Anime",
+            "TvSeries",
+            "Movie"
+        ],
+        "version": 1,
+        "internalName": "PhimmoiProvider",
+        "url": "https://raw.githubusercontent.com/tuan041/repo/builds/PhimmoiProvider.cs3",
+        "name": "PhimmoiProvider"
+    }
+]
