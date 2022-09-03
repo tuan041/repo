@@ -82,28 +82,6 @@ open class JenkaProvider : MainAPI() {
             val metaInfo = it.select("div.main-movie-content > span.status")
             // val rating = metaInfo[0].text()
             val quality = getQualityFromString(metaInfo.getOrNull(1)?.text())
-
-            if (isMovie) {
-                MovieSearchResponse(
-                    title,
-                    href,
-                    this.name,
-                    TvType.Movie,
-                    image,
-                    year,
-                    quality = quality
-                )
-            } else {
-                TvSeriesSearchResponse(
-                    title,
-                    href,
-                    this.name,
-                    TvType.TvSeries,
-                    image,
-                    year,
-                    quality = quality
-                )
-            }
         }
     }
 }
