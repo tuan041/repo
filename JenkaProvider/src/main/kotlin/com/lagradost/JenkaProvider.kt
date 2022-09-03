@@ -68,3 +68,42 @@ open class JenkaProvider : MainAPI() {
 
         return HomePageResponse(all)
     }
+    
+    override suspend fun search(query: String): List<SearchResponse> {
+        val url = "$mainUrl/search?q=${query.replace(" ", "-")}"
+        val html = app.get(url).text
+        val document = Jsoup.parse(html)
+
+        return document.select("div.phimitem").map {
+            val title = it.select("h3.lable-home").text()
+            val href = fixUrl(it.select("a.lable-about").attr("href"))
+            val image = it.select("img").attr("data-src")
+
+            val metaInfo = it.select("div.main-movie-content > span.status")
+            // val rating = metaInfo[0].text()
+            val quality = getQualityFromString(metaInfo.getOrNull(1)?.text())
+
+            if (isMovie) {
+                MovieSearchResponse(
+                    title,
+                    href,
+                    this.name,
+                    TvType.Movie,
+                    image,
+                    year,
+                    quality = quality
+                )
+            } else {
+                TvSeriesSearchResponse(
+                    title,
+                    href,
+                    this.name,
+                    TvType.TvSeries,
+                    image,
+                    year,
+                    quality = quality
+                )
+            }
+        }
+    }
+}
