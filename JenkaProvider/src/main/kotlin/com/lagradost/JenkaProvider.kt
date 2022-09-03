@@ -33,7 +33,7 @@ class JenkaProvider : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
-        val document = app.get(request.data + page).document
+        val document = app.get(request.data + page).document ?: return@mapNotNull null
     }
     
      private fun decode(input: String): String? = URLDecoder.decode(input, "utf-8")
