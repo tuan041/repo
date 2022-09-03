@@ -95,4 +95,21 @@ open class JenkaProvider : MainAPI() {
         var year = details.select("span.namxuatban_remove")
         val plot = details.select("div.noidung").text().trim()
     }
+    
+    private fun Element.toSearchResult(): SearchResponse {
+        val inner = this.selectFirst("div.phimitem")
+        val img = inner!!.select("img.img-lable.lazyloaded")
+        val title = document.attr("h3.lable-home")
+        val posterUrl = img.attr("data-src") ?: img.attr("src")
+        val href = fixUrl(inner.select("a.lable-about").attr("href"))
+        val otherInfo =
+            this.selectFirst("div.main-movie-content")?.select("span")?.toList() ?: listOf()
+        //var rating: Int? = null
+        var quality: SearchQuality? = null
+        when (otherInfo.size) {
+                //rating = otherInfo[0]?.text()?.toRatingInt()
+                quality = getQualityFromString(otherInfo[1]?.text())
+            }
+        }
+    }
 }
