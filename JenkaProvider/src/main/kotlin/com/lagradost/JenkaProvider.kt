@@ -84,4 +84,15 @@ open class JenkaProvider : MainAPI() {
             val quality = getQualityFromString(metaInfo.getOrNull(1)?.text())
         }
     }
+    
+    override suspend fun load(url: String): LoadResponse {
+        val document = app.get(url).document
+
+        val details = document.select("div.information")
+        val img = details.select("img.lazyloaded")
+        val posterUrl = img.attr("src")
+        val title = details.select("h1")
+        var year = details.select("span.namxuatban_remove")
+        val plot = details.select("div.noidung").text().trim()
+    }
 }
