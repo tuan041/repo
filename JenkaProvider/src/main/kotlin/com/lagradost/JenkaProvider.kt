@@ -34,7 +34,6 @@ class JenkaProvider : MainAPI() {
         request: MainPageRequest
     ): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home = document.select("li.item").mapNotNull
     }
     
      private fun decode(input: String): String? = URLDecoder.decode(input, "utf-8")
