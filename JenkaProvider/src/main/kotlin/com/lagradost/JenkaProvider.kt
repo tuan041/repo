@@ -78,10 +78,6 @@ open class JenkaProvider : MainAPI() {
             val title = it.select("h3.lable-home").text()
             val href = fixUrl(it.select("a.lable-about").attr("href"))
             val image = it.select("img").attr("data-src")
-
-            val metaInfo = it.select("div.main-movie-content > span.status")
-            // val rating = metaInfo[0].text()
-            val quality = getQualityFromString(metaInfo.getOrNull(1)?.text())
         }
     }
     
@@ -99,17 +95,8 @@ open class JenkaProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val inner = this.selectFirst("div.phimitem")
         val img = inner!!.select("img.img-lable.lazyloaded")
-        val title = document.attr("h3.lable-home")
+        val title = document.select("h3.lable-home")
         val posterUrl = img.attr("data-src") ?: img.attr("src")
         val href = fixUrl(inner.select("a.lable-about").attr("href"))
-        val otherInfo =
-            this.selectFirst("div.main-movie-content")?.select("span")?.toList() ?: listOf()
-        //var rating: Int? = null
-        var quality: SearchQuality? = null
-        when (otherInfo.size) {
-                //rating = otherInfo[0]?.text()?.toRatingInt()
-                quality = getQualityFromString(otherInfo[1]?.text())
-            }
-        }
     }
 }
