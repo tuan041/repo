@@ -105,6 +105,7 @@ class PhimmoichillProvider : MainAPI() {
                     recTitle,
                     recUrl,
                     this.name,
+                    TvType.Movie,
                     poster
                 )
             }
