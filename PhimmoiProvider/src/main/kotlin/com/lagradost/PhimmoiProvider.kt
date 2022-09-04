@@ -97,17 +97,7 @@ class PhimmoiProvider : MainAPI() {
             document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
         val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
         val recommendations = document.select("ul#list-film-realted li.item").mapNotNull {
-                val a = it.select("a") ?: return@mapNotNull null
-                val link = a.attr("href") ?: return@mapNotNull null
-                val title = a.select("p").text() ?: return@mapNotNull null
-                val posterUrl = it.select("div.image img[itemprop=image]")?.attr("src")
-                MovieSearchResponse(
-                    title,
-                    link,
-                    this.name,
-                    TvType.Movie,
-                    posterUrl,
-                )
+                it.toSearchResponse()
             }
 
         return if (tvType == TvType.TvSeries) {
