@@ -27,7 +27,7 @@ import java.util.*
 import kotlin.system.measureTimeMillis
 
 open class XemphimProvider : MainAPI() {
-    override var mainUrl = "https://sflix.to"
+    override var mainUrl = "https://xemphim.club/"
     override var name = "Xemphim"
 
     override val hasQuickSearch = false
@@ -42,27 +42,28 @@ open class XemphimProvider : MainAPI() {
     override val vpnStatus = VPNStatus.None
 
     override suspend fun getMainPage(page: Int, request : MainPageRequest): HomePageResponse {
-        val html = app.get("$mainUrl/home").text
+        val html = app.get("$mainUrl").text
         val document = Jsoup.parse(html)
 
         val all = ArrayList<HomePageList>()
 
-        val map = mapOf(
-            "Trending Movies" to "div#trending-movies",
-            "Trending TV Shows" to "div#trending-tv",
+        val mainPage = mainPageOf(
+            "$mainUrl/top" to "Phim hot",
+            "$mainUrl/type/movie" to "Phim Lẻ",
+            "$mainUrl/type/show" to "Phim Lẻ",
         )
         map.forEach {
             all.add(HomePageList(
                 it.key,
-                document.select(it.value).select("div.flw-item").map { element ->
+                document.select(it.value).select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile").map { element ->
                     element.toSearchResult()
                 }
             ))
         }
 
-        document.select("section.block_area.block_area_home.section-id-02").forEach {
-            val title = it.select("h2.cat-heading").text().trim()
-            val elements = it.select("div.flw-item").map { element ->
+        document.select("div.grid.columns.is-mobile.is-multiline.is-variable.is-2").forEach {
+            val title = it.select("h3.name.vi").text().trim()
+            val elements = it.select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile").map { element ->
                 element.toSearchResult()
             }
             all.add(HomePageList(title, elements))
@@ -703,7 +704,7 @@ open class XemphimProvider : MainAPI() {
                 headers = mapOf(
                     "X-Requested-With" to "XMLHttpRequest",
                     "Accept" to "*/*",
-                    "Accept-Language" to "en-US,en;q=0.5",
+                    "Accept-Language" to "vi-VN,vi;q=0.5",
 //                        "Cache-Control" to "no-cache",
                     "Connection" to "keep-alive",
 //                        "Sec-Fetch-Dest" to "empty",
