@@ -100,7 +100,7 @@ class PhimmoiProvider : MainAPI() {
                 val titleHeader = it.select("a") ?: return@mapNotNull null
                 val recUrl = titleHeader.attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.select("p").text() ?: return@mapNotNull null
-                val poster = titleHeader.selectFirst("img")?.attr("src")
+                val poster = decode(titleHeader.selectFirst("img")!!.attr("src").substringAfter("url="))
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
