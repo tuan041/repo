@@ -10,9 +10,9 @@ import org.jsoup.nodes.Element
 import java.net.URLDecoder
 import java.util.ArrayList
 
-class PhimmoichillProvider : MainAPI() {
+class PhimmoiProvider : MainAPI() {
     override var mainUrl = "https://phimmoichill.net"
-    override var name = "Phimmoichill"
+    override var name = "Phimmoi"
     override val hasMainPage = true
     override var lang = "vi"
     override val hasDownloadSupport = true
