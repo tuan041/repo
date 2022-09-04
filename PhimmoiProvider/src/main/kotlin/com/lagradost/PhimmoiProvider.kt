@@ -46,6 +46,29 @@ class PhimmoiProvider : MainAPI() {
 
     private fun decode(input: String): String? = URLDecoder.decode(input, "utf-8")
 
+    private fun Element.toSearchResult(): SearchResponse {
+        val title = this.selectFirst("p,h3")?.text()?.trim().toString()
+        val href = fixUrl(this.selectFirst("a")!!.attr("href"))
+        val posterUrl = decode(this.selectFirst("img")!!.attr("src").substringAfter("url="))
+        val temp = this.select("span.label").text()
+        return if (temp.contains(Regex("\\d"))) {
+            val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
+                num.replace(Regex("\\(|\\s"), "")
+            }?.distinct()?.firstOrNull()?.toIntOrNull()
+            newAnimeSearchResponse(title, href, TvType.TvSeries) {
+                this.posterUrl = posterUrl
+                addSub(episode)
+            }
+        } else {
+            val quality =
+                temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
+            newMovieSearchResponse(title, href, TvType.Movie) {
+                this.posterUrl = posterUrl
+                addQuality(quality)
+            }
+        }
+    }
+    
     override suspend fun search(query: String): List<SearchResponse> {
         val link = "$mainUrl/tim-kiem/$query"
         val document = app.get(link).document
@@ -73,7 +96,7 @@ class PhimmoiProvider : MainAPI() {
         val rating =
             document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
         val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
-        val recommendations = document.select("ul#list-film-realted li.item").mapNotNull {
+        val recommendations = document.select("ul#list-film-realted li.item").map {
                 it.toSearchResponse()
             }
 
@@ -114,29 +137,6 @@ class PhimmoiProvider : MainAPI() {
         }
     }
 
-    private fun Element.toSearchResult(): SearchResponse {
-        val title = this.selectFirst("p,h3")?.text()?.trim().toString()
-        val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = decode(this.selectFirst("img")!!.attr("src").substringAfter("url="))
-        val temp = this.select("span.label").text()
-        return if (temp.contains(Regex("\\d"))) {
-            val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
-                num.replace(Regex("\\(|\\s"), "")
-            }?.distinct()?.firstOrNull()?.toIntOrNull()
-            newAnimeSearchResponse(title, href, TvType.TvSeries) {
-                this.posterUrl = posterUrl
-                addSub(episode)
-            }
-        } else {
-            val quality =
-                temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
-            newMovieSearchResponse(title, href, TvType.Movie) {
-                this.posterUrl = posterUrl
-                addQuality(quality)
-            }
-        }
-    }
-    
     override suspend fun loadLinks(
         data: String,
         isCasting: Boolean,
