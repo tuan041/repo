@@ -3,11 +3,11 @@ version = 1
 
 
 cloudstream {
-    language = "en"
+    language = "fr"
     // All of these properties are optional, you can safely remove them
 
     // description = "Lorem Ipsum"
-    // authors = listOf("Cloudburst")
+    authors = listOf("Sarlay")
 
     /**
      * Status int as the following:
@@ -18,13 +18,9 @@ cloudstream {
      * */
     status = 1 // will be 3 if unspecified
     tvTypes = listOf(
-        "Cartoon",
-        "Anime",
-        "Movie",
         "AnimeMovie",
-        "TvSeries",
+        "Movie",
     )
 
-
-    iconUrl = "https://www.google.com/s2/favicons?domain=trailers.to&sz=%size%"
+    iconUrl = "https://www.google.com/s2/favicons?domain=mesfilms.lol&sz=%size%"
 }
