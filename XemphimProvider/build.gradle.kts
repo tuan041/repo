@@ -6,7 +6,7 @@ cloudstream {
     language = "vi"
     // All of these properties are optional, you can safely remove them
 
-    description = "Also includes Dopebox, Solarmovie, Zoro and 2embed"
+    description = "Xemphim"
     // authors = listOf("Cloudburst")
 
     /**
