@@ -10,9 +10,9 @@ import org.jsoup.nodes.Element
 import java.net.URLDecoder
 import java.util.ArrayList
 
-class PhimmoiProvider : MainAPI() {
+class PhimmoichillProvider : MainAPI() {
     override var mainUrl = "https://phimmoichill.net"
-    override var name = "Phimmoi"
+    override var name = "Phimmoichill"
     override val hasMainPage = true
     override var lang = "vi"
     override val hasDownloadSupport = true
@@ -68,7 +68,7 @@ class PhimmoiProvider : MainAPI() {
             }
         }
     }
-    
+
     override suspend fun search(query: String): List<SearchResponse> {
         val link = "$mainUrl/tim-kiem/$query"
         val document = app.get(link).document
@@ -97,8 +97,8 @@ class PhimmoiProvider : MainAPI() {
             document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
         val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
         val recommendations = document.select("ul#list-film-realted li.item").map {
-                it.toSearchResponse()
-            }
+            it.toSearchResult()
+        }
 
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(link).document
