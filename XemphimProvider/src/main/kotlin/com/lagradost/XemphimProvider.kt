@@ -50,7 +50,7 @@ class XemphimProvider : MainAPI() {
         val temp = this.select("span.ribbon").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("\\d+").find(temp)?.groupValues?.map { num ->
-                num.replace(Regex(""))
+                num.replace(Regex(""), "")
             }?.distinct()?.firstOrNull()?.toIntOrNull()
             newAnimeSearchResponse(title, href, TvType.TvSeries) {
                 this.posterUrl = posterUrl
