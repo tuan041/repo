@@ -99,16 +99,9 @@ class XemphimProvider : MainAPI() {
         }?.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val titleHeader = it.select("h4") ?: return@mapNotNull null
-                val recUrl = titleHeader.attr("href") ?: return@mapNotNull null
-                val recTitle = titleHeader.text() ?: return@mapNotNull null
-                val poster = it.select("img").attr("src") ?: return@mapNotNull null
-                MovieSearchResponse(
-                    recTitle,
-                    recUrl,
-                    this.name,
-                    TvType.Movie,
-                    poster
-                )
+                val recUrl = recommendations.attr("href") ?: return@mapNotNull null
+                val recTitle = recommendations.text() ?: return@mapNotNull null
+                val poster = recommendations.select("img").attr("src") ?: return@mapNotNull null
         }
         
         return if (tvType == TvType.TvSeries) {
