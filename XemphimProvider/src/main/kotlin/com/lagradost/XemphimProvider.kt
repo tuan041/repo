@@ -48,7 +48,6 @@ open class XemphimProvider : MainAPI() {
         val all = ArrayList<HomePageList>()
 
         val map = mapOf(
-            "Phim Hot" to "$mainUrl/top",
             "Phim Lẻ" to "$mainUrl/type/movie",
             "Phim Bộ" to "$mainUrl/type/show",
         )
