@@ -84,15 +84,16 @@ class XemphimProvider : MainAPI() {
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4) > #text").map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = document.select("div.detail-info > a:nth-child(2)")?.text()?.lowercase()?.contains("b") ?: false
+        val tvType = if (document.select("div.latest-episode").isNotEmpty()
+        ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt() ?: return@mapNotNull null
         val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")?.mapNotNull { actors ->
-            actors?.text()?.trim().removePrefix("Diễn viên: ") ?: return@mapNotNull null
+            actors!!.text()?.trim().removePrefix("Diễn viên: ") ?: return@mapNotNull null
         }?.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
