@@ -76,7 +76,31 @@ open class XemphimProvider : MainAPI() {
         val title = inner.attr("h3")
         val posterUrl = img.attr("src")
         val href = fixUrl(inner.select("a").attr("href"))
+        val isMovie = href.contains("/movie/")
         val quality = this.selectFirst("div.img-4-6 > div.inline")?.select("span.ribbon")?.text()?.trim()?.toIntOrNull()
+        }
+    
+        return if (isMovie) {
+            MovieSearchResponse(
+                title,
+                href,
+                this@SflixProvider.name,
+                TvType.Movie,
+                posterUrl = posterUrl,
+                year = year,
+                quality = quality,
+            )
+        } else {
+            TvSeriesSearchResponse(
+                title,
+                href,
+                this@SflixProvider.name,
+                TvType.Movie,
+                posterUrl,
+                year = year,
+                episodes = null,
+                quality = quality,
+            )
         }
     }
 
