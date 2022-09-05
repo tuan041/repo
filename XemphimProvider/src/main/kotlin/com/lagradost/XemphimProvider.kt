@@ -46,7 +46,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("a > div.img-4-6 > div.inline > img")!!.attr("src")
+        val posterUrl = fixUrlNull(this.selectFirst("a > div.img-4-6 > div.inline > img.ls-is-cached.lazyloaded")?.attr("data-src"))
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
@@ -92,7 +92,7 @@ class XemphimProvider : MainAPI() {
                 ?.substringBefore("\",")
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").removePrefix(10).map { it.text() }
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").text().removePrefix("Diễn viên: ").map { it.text() }
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
