@@ -91,8 +91,8 @@ class XemphimProvider : MainAPI() {
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").substringAfter(": ").map { it.text() }
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().substringAfter(": ").toRatingInt()
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info#text").map { it.text() }
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
