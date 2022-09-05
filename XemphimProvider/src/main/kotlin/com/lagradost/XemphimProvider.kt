@@ -27,7 +27,7 @@ import java.util.*
 import kotlin.system.measureTimeMillis
 
 open class XemphimProvider : MainAPI() {
-    override var mainUrl = "https://xemphim.club/"
+    override var mainUrl = "https://xemphim.club"
     override var name = "Xemphim"
 
     override val hasQuickSearch = false
