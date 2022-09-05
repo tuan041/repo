@@ -80,18 +80,18 @@ class XemphimProvider : MainAPI() {
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4) > #text").map { it.text() }
-        val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5) > #text").text().trim()
+        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4) > span").map { it.text() }
+        val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5) > span").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2) > #text")?.text()?.contains(" t")
+        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2) > #text").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info > li > #text").map { it.text() }
+            document.select("ul.entry-meta.block-film li:nth-child(7) span").text().removePrefix("IMDB: ").toRatingInt()
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info > li > span").map { it.text() }
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
