@@ -100,7 +100,7 @@ class XemphimProvider : MainAPI() {
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("item col-lg-2 col-md-3 col-sm-4 col-6") ?: return@mapNotNull null
                 val recUrl = main.attr("href") ?: return@mapNotNull null
-                val recTitle = main.text("h4") ?: return@mapNotNull null
+                val recTitle = main.select("h4") ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
                 MovieSearchResponse(
                     recTitle,
