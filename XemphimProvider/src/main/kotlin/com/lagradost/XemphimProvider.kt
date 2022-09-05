@@ -27,6 +27,7 @@ class XemphimProvider : MainAPI() {
         "$mainUrl/phim-chieu-rap/" to "Phim Chiếu Rạp",
         "$mainUrl/phim-le/trang-" to "Phim Lẻ",
         "$mainUrl/phim-bo/trang-" to "Phim Bộ",
+        "$mainUrl/category/hoat-hinh/trang-" to "Phim hoạt hình",
     )
 
     override suspend fun getMainPage(
@@ -45,7 +46,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = decode(this.selectFirst("a > div.img-4-6 > div.inline > img")?.attr("src").substringAfter("url="))
+        val posterUrl = decode(this.selectFirst("a > div.img-4-6 > div.inline > img")!!.attr("src").substringAfter("url="))
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
