@@ -25,7 +25,7 @@ class XemphimProvider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/phim-chieu-rap/" to "Phim Chiếu Rạp",
+        "$mainUrl/phim/phim-chieu-rap/" to "Phim Chiếu Rạp",
         "$mainUrl/phim/phim-le/trang-" to "Phim Lẻ",
         "$mainUrl/phim/phim-bo/trang-" to "Phim Bộ",
         "$mainUrl/phim/hoat-hinh/trang-" to "Hoạt hình",
@@ -76,7 +76,7 @@ class XemphimProvider : MainAPI() {
         val document = app.get(url).document
 
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
-        val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
+        val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")
             .mapNotNull { tag ->
@@ -97,7 +97,7 @@ class XemphimProvider : MainAPI() {
                 actor.text().trim().substringAfter(": ")
             }.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
-                val main = it.select("item col-lg-2 col-md-3 col-sm-4 col-6") ?: return@mapNotNull null
+                val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
                 val titleHeader = it.select("h4") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
@@ -113,11 +113,11 @@ class XemphimProvider : MainAPI() {
         
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(link).document
-            val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
+            val episodes = docEpisodes.select("ul.list-episodes.row").map {
                 val href = it.select("a").attr("href")
                 val episode =
                     it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
-                val name = "Tập $episode"
+                val name = "Episode $episode"
                 Episode(
                     data = href,
                     name = name,
