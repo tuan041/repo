@@ -27,7 +27,7 @@ import java.util.*
 import kotlin.system.measureTimeMillis
 
 open class XemphimProvider : MainAPI() {
-    override var mainUrl = "https://xemphim.club/"
+    override var mainUrl = "https://xemphim.club"
     override var name = "Xemphim"
 
     override val hasQuickSearch = false
@@ -42,27 +42,28 @@ open class XemphimProvider : MainAPI() {
     override val vpnStatus = VPNStatus.None
 
     override suspend fun getMainPage(page: Int, request : MainPageRequest): HomePageResponse {
-        val html = app.get("$mainUrl/home").text
+        val html = app.get("$mainUrl").text
         val document = Jsoup.parse(html)
 
         val all = ArrayList<HomePageList>()
 
         val map = mapOf(
-            "Trending Movies" to "div#trending-movies",
-            "Trending TV Shows" to "div#trending-tv",
+            "Phim đề cử" to "div.title-list:nth-child(1)",
+            "Phim lẻ" to "div.title-list:nth-child(2)",
+            "Phim bộ" to "div.title-list:nth-child(3)",
         )
         map.forEach {
             all.add(HomePageList(
                 it.key,
-                document.select(it.value).select("div.flw-item").map { element ->
+                document.select(it.value).select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile").map { element ->
                     element.toSearchResult()
                 }
             ))
         }
 
-        document.select("section.block_area.block_area_home.section-id-02").forEach {
-            val title = it.select("h2.cat-heading").text().trim()
-            val elements = it.select("div.flw-item").map { element ->
+        document.select("div.title-list").forEach {
+            val title = it.select("h2").text().trim()
+            val elements = it.select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile").map { element ->
                 element.toSearchResult()
             }
             all.add(HomePageList(title, elements))
@@ -115,10 +116,10 @@ open class XemphimProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val details = document.select("div.detail_page-watch")
-        val img = details.select("img.film-poster-img")
+        val details = document.select("div.tt-details.columns.is-variable.is-8")
+        val img = details.select("div.column.is-one-quarter-tablet > p.cover.has-text-centered > img")
         val posterUrl = img.attr("src")
-        val title = img.attr("title") ?: throw ErrorLoadingException("No Title")
+        val title = details.attr("div.column.main > h2.subtitle.is-4") ?.substringBefore(" (") ?: throw ErrorLoadingException("No Title")
 
         /*
         val year = Regex("""[Rr]eleased:\s*(\d{4})""").find(
@@ -127,7 +128,7 @@ open class XemphimProvider : MainAPI() {
         val duration = Regex("""[Dd]uration:\s*(\d*)""").find(
             document.select("div.elements").text()
         )?.groupValues?.get(1)?.trim()?.plus(" min")*/
-        var duration = document.selectFirst(".fs-item > .duration")?.text()?.trim()
+        var duration = document.selectFirst("div.column.main > div.meta > span:nth-child(1)")?.text()?.trim()
         var year: Int? = null
         var tags: List<String>? = null
         var cast: List<String>? = null
