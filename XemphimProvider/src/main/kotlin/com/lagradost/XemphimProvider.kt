@@ -50,7 +50,7 @@ class XemphimProvider : MainAPI() {
         val temp = this.select("span.ribbon").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("\\d+").find(temp)?.groupValues?.map { num ->
-                num.replace(Regex(""), "")
+                num.replace(Regex("\\(|\\s"), "")
             }?.distinct()?.firstOrNull()?.toIntOrNull()
             newAnimeSearchResponse(title, href, TvType.TvSeries) {
                 this.posterUrl = posterUrl
@@ -98,10 +98,10 @@ class XemphimProvider : MainAPI() {
             actor.text().trim().substringAfter(": ") ?: return@mapNotNull null
         }?.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
-                val titleHeader = it.select("h4") ?: return@mapNotNull null
-                val recUrl = it.attr("href") ?: return@mapNotNull null
-                val recTitle = it.text() ?: return@mapNotNull null
-                val poster = it.select("img").attr("src") ?: return@mapNotNull null
+                val main = it.select("item col-lg-2 col-md-3 col-sm-4 col-6") ?: return@mapNotNull null
+                val recUrl = main.attr("href") ?: return@mapNotNull null
+                val recTitle = main.text("h4") ?: return@mapNotNull null
+                val poster = main.select("img").attr("src") ?: return@mapNotNull null
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
