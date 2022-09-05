@@ -84,7 +84,7 @@ class XemphimProvider : MainAPI() {
         }?.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.text()?.lowercase()?.contain("bộ")
+        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
@@ -101,12 +101,14 @@ class XemphimProvider : MainAPI() {
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
+                val temp = main.select("span.ribbon").text() ?: return@mapNotNull null
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
                     this.name,
                     TvType.Movie,
-                    poster
+                    poster,
+                    temp
                 )
         }
         
