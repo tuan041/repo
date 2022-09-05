@@ -50,7 +50,7 @@ class XemphimProvider : MainAPI() {
         val temp = this.select("span.ribbon").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("\\d+").find(temp)?.groupValues?.map { num ->
-                num.replace(Regex("\\(|\\s"), "")
+                num.replace(Regex("")
             }?.distinct()?.firstOrNull()?.toIntOrNull()
             newAnimeSearchResponse(title, href, TvType.TvSeries) {
                 this.posterUrl = posterUrl
@@ -81,8 +81,8 @@ class XemphimProvider : MainAPI() {
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.mapNotNull { actors ->
-            actors.text().trim().removePrefix("Thể loại: ") ?: return@mapNotNull null
+        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.mapNotNull { tag ->
+            tag.text().trim().removePrefix("Thể loại: ") ?: return@mapNotNull null
         }?.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
@@ -94,14 +94,21 @@ class XemphimProvider : MainAPI() {
                 ?.substringBefore("\",")
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")?.mapNotNull { actors ->
-            actors.text().trim().substringAfter(": ") ?: return@mapNotNull null
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")?.mapNotNull { actor ->
+            actor.text().trim().substringAfter(": ") ?: return@mapNotNull null
         }?.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val titleHeader = it.select("h4") ?: return@mapNotNull null
                 val recUrl = recommendations.attr("href") ?: return@mapNotNull null
                 val recTitle = recommendations.text() ?: return@mapNotNull null
                 val poster = recommendations.select("img").attr("src") ?: return@mapNotNull null
+                MovieSearchResponse(
+                    recTitle,
+                    recUrl,
+                    this.name,
+                    TvType.Movie,
+                    poster
+                )
         }
         
         return if (tvType == TvType.TvSeries) {
