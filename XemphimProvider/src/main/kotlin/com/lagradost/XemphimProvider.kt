@@ -104,7 +104,7 @@ class XemphimProvider : MainAPI() {
                 val titleHeader = it.select("h4") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
-                val poster = main.select("img").attr("src") ?: return@mapNotNull null
+                val poster = main.select("img.lazyloaded").attr("src")
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
@@ -114,7 +114,7 @@ class XemphimProvider : MainAPI() {
                 )
         }
         
-        return if (tvType == TvType.TvSeries) {
+        return if (istvType) {
             val docEpisodes = app.get(link).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("a").attr("href")
