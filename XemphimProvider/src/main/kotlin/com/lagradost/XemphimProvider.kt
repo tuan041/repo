@@ -84,7 +84,7 @@ class XemphimProvider : MainAPI() {
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").contains(Regex("tập"))
+        val tvType = if (document.select("div.detail-info > a:nth-child(2)").contains("B")
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
