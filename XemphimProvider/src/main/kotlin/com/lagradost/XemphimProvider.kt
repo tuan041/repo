@@ -6,6 +6,10 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.utils.AppUtils.toJson
+import com.lagradost.cloudstream3.utils.AppUtils.tryParseJson
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.loadExtractor
 import org.jsoup.nodes.Element
 import java.net.URLDecoder
 import java.util.ArrayList
@@ -84,8 +88,8 @@ class XemphimProvider : MainAPI() {
         }?.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").isEmpty()
-        ) TvType.TvSeries else TvType.Movie
+        val tvType = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.text()?.lowercase()?.contains("bộ") ?: false
+
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
