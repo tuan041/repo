@@ -84,7 +84,7 @@ class XemphimProvider : MainAPI() {
         }?.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").isNotEmpty()
+        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").isEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
@@ -112,11 +112,11 @@ class XemphimProvider : MainAPI() {
         
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(link).document
-            val episodes = docEpisodes.select("ul#list_episodes > li").map {
+            val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("a").attr("href")
                 val episode =
                     it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
-                val name = "Episode $episode"
+                val name = "Tập $episode"
                 Episode(
                     data = href,
                     name = name,
