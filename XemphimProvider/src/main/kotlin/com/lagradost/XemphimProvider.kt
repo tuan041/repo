@@ -45,7 +45,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = decode(this.selectFirst("div.img-4-6")!!.attr("src").substringAfter("url="))
+        val posterUrl = this.selectFirst("div.img-4-6")?.attr("src")
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
@@ -80,8 +80,8 @@ class XemphimProvider : MainAPI() {
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
         val poster = document.selectFirst("div.col-md-4.col-12 > div.item > div.img-4-6")?.attr("src")
-        val tags = document.select("div.col-md-6.col-12 > ul.more-info(4) > li#text").map { it.text() }
-        val year = document.select("div.col-md-6.col-12 > ul.more-info(5) > li#text").text().trim()
+        val tags = document.select("div.col-md-6.col-12 > ul.more-info > li:nth-child(4) > #text").map { it.text() }
+        val year = document.select("div.col-md-6.col-12 > ul.more-info > li:nth-child(5) > #text").text().trim()
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
