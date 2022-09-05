@@ -81,7 +81,7 @@ class XemphimProvider : MainAPI() {
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.mapNotNull { tag ->
             tag.text().trim().substringAfter(": ") ?: return@mapNotNull null
-        }?.toList()
+        }.map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
@@ -100,7 +100,7 @@ class XemphimProvider : MainAPI() {
                 val titleHeader = it.select("h4") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
-                val poster = it.select("img").attr("src") ?: return@mapNotNull null
+                val poster = main.select("img").attr("src") ?: return@mapNotNull null
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
