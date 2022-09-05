@@ -45,7 +45,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("img")?.attr("src")
+        val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
@@ -83,7 +83,7 @@ class XemphimProvider : MainAPI() {
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4) > #text").map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5) > #text").text().trim()
             .toIntOrNull()
-        val tvType = if (document.select("div.latest-episode").isNotEmpty()
+        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2) > #text").contains("tập")
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
@@ -91,7 +91,7 @@ class XemphimProvider : MainAPI() {
                 ?.substringBefore("\",")
         val rating =
             document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info > li#text").map { it.text() }
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info > li > #text").map { it.text() }
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
