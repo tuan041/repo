@@ -81,7 +81,7 @@ class XemphimProvider : MainAPI() {
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text() }
+        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4) > #text").map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
         val tvType = document.select("div.detail-info > a:nth-child(2)")?.text()?.lowercase()?.contains("b") ?: false
@@ -91,12 +91,14 @@ class XemphimProvider : MainAPI() {
                 ?.substringBefore("\",")
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").map { it.text() }
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")?.mapNotNull { actors ->
+            actors?.text()?.trim().removePrefix("Diễn viên: ") ?: return@mapNotNull null
+        }?.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
-
-        return if (tvType == TvType.TvSeries) {
+        
+        return if (tvType = TvType.TvSeries) {
             val docEpisodes = app.get(link).document
             val episodes = docEpisodes.select("ul#list_episodes > li").map {
                 val href = it.select("a").attr("href")
