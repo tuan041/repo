@@ -101,14 +101,12 @@ class XemphimProvider : MainAPI() {
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
-                val temp = main.select("span.ribbon").text() ?: return@mapNotNull null
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
                     this.name,
                     TvType.Movie,
                     poster,
-                    temp
                 )
         }
         
