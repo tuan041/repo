@@ -34,7 +34,7 @@ class XemphimProvider : MainAPI() {
         request: MainPageRequest
     ): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home = document.select("div.list-vod.row.category-tabs-item").mapNotNull {
+        val home = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
             it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
@@ -45,7 +45,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("div.item.col-lg-2.col-md-3.col-sm-4.col-6 > a")?.attr("src")
+        val posterUrl = this.selectFirst("img")?.attr("src")
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
@@ -79,7 +79,7 @@ class XemphimProvider : MainAPI() {
 
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
-        val poster = document.selectFirst("div.col-md-4.col-12 > div.item > div.img-4-6")?.attr("src")
+        val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4) > #text").map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5) > #text").text().trim()
             .toIntOrNull()
@@ -90,9 +90,9 @@ class XemphimProvider : MainAPI() {
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("div.col-md-6.col-12").text().toRatingInt()
-        val actors = document.select("div.col-md-6.col-12").map { it.text() }
-        val recommendations = document.select("div.list-vod.row.category-tabs-item").map {
+            document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info > li#text").map { it.text() }
+        val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
 
