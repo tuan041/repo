@@ -91,15 +91,15 @@ class XemphimProvider : MainAPI() {
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt() ?: return@mapNotNull null
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
         val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")?.mapNotNull { actors ->
-            actors!!.text()?.trim().removePrefix("Diễn viên: ") ?: return@mapNotNull null
+            actors.text().trim().removePrefix("Diễn viên: ") ?: return@mapNotNull null
         }?.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
         
-        return if (tvType = TvType.TvSeries) {
+        return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(link).document
             val episodes = docEpisodes.select("ul#list_episodes > li").map {
                 val href = it.select("a").attr("href")
