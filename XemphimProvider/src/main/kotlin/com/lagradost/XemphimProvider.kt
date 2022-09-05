@@ -81,10 +81,10 @@ class XemphimProvider : MainAPI() {
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.mapNotNull { tag ->
             tag.text().trim().substringAfter(": ") ?: return@mapNotNull null
-        }.map { it.text() }
+        }?.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.latest-episode").isNotEmpty()
+        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")?.text()?.lowercase()?.contain("bộ")
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
