@@ -47,12 +47,12 @@ open class XemphimProvider : MainAPI() {
 
         val all = ArrayList<HomePageList>()
 
-        val mainPage = mainPageOf(
-            "$mainUrl/top" to "Phim hot",
-            "$mainUrl/type/movie" to "Phim Lẻ",
-            "$mainUrl/type/show" to "Phim Lẻ",
+        val map = mapOf(
+            "Phim Hot" to "$mainUrl/top",
+            "Phim Lẻ" to "$mainUrl/type/movie",
+            "Phim Bộ" to "$mainUrl/type/show",
         )
-        forEach {
+        map.forEach {
             all.add(HomePageList(
                 it.key,
                 document.select(it.value).select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile").map { element ->
