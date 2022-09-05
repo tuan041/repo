@@ -77,9 +77,24 @@ open class XemphimProvider : MainAPI() {
         val posterUrl = img.attr("src")
         val href = fixUrl(inner.select("a").attr("href"))
         val isMovie = href.contains("/movie/")
-        val quality = this.selectFirst("div.img-4-6 > div.inline")?.select("span.ribbon")?.text()?.trim()?.toIntOrNull()
-        }
-    
+        val quality = 
+            this.selectFirst("div.img-4-6 > div.inline")?.select("span.ribbon")?.text()?.trim()?.toIntOrNull()
+        //var rating: Int? = null
+        var year: Int? = null
+        var quality: SearchQuality? = null
+        when (otherInfo.size) {
+            1 -> {
+                year = otherInfo[0]?.text()?.trim()?.toIntOrNull()
+            }
+            2 -> {
+                year = otherInfo[0]?.text()?.trim()?.toIntOrNull()
+            }
+            3 -> {
+                //rating = otherInfo[0]?.text()?.toRatingInt()
+                quality = getQualityFromString(otherInfo[1]?.text())
+                year = otherInfo[2]?.text()?.trim()?.toIntOrNull()
+            }
+        }    
         return if (isMovie) {
             MovieSearchResponse(
                 title,
