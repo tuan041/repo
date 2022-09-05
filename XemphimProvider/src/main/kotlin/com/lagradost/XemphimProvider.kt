@@ -114,7 +114,7 @@ class XemphimProvider : MainAPI() {
                 )
         }
         
-        return if (istvType) {
+        return if (tvType) {
             val docEpisodes = app.get(link).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("a").attr("href")
