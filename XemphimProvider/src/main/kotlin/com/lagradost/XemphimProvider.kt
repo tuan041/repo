@@ -46,7 +46,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img").attr("src")
+        val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("\\d+").find(temp)?.groupValues?.map { num ->
@@ -106,6 +106,7 @@ class XemphimProvider : MainAPI() {
                     recTitle,
                     recUrl,
                     this.name,
+                    TvType.Movie,
                     poster
                 )
         }
