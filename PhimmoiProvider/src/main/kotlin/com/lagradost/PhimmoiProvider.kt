@@ -89,7 +89,8 @@ class PhimmoiProvider : MainAPI() {
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div#film-content").text().trim()
+        val description = document.select("div#film-content").text().trim()?.substringAfter("Thuyết Minh")
+                ?.substringBefore("@")
         val trailer =
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
