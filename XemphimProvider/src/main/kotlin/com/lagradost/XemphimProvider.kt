@@ -39,7 +39,6 @@ open class XemphimProvider : MainAPI() {
         TvType.Movie,
         TvType.TvSeries,
     )
-    override val vpnStatus = VPNStatus.cloudflare
 
     override suspend fun getMainPage(page: Int, request : MainPageRequest): HomePageResponse {
         val html = app.get("$mainUrl").text
