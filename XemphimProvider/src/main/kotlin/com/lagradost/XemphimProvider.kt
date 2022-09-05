@@ -48,8 +48,7 @@ open class XemphimProvider : MainAPI() {
         val all = ArrayList<HomePageList>()
 
         val map = mapOf(
-            "Phim Lẻ" to "$mainUrl/type/movie",
-            "Phim Bộ" to "$mainUrl/type/show",
+            "Phim Lẻ" to "div.grid.columns.is-mobile.is-multiline.is-variable.is-2",
         )
         map.forEach {
             all.add(HomePageList(
