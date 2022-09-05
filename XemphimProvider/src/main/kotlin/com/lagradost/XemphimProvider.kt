@@ -79,20 +79,20 @@ class XemphimProvider : MainAPI() {
 
         val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > a").attr("href")
-        val poster = document.selectFirst("div.image img[itemprop=image]")?.attr("src")
-        val tags = document.select("ul.entry-meta.block-film li:nth-child(4) a").map { it.text() }
-        val year = document.select("ul.entry-meta.block-film li:nth-child(2) a").text().trim()
+        val poster = document.selectFirst("div.col-md-4.col-12 > div.item > div.img-4-6")?.attr("src")
+        val tags = document.select("div.col-md-6.col-12(1) > ul.more-info(4) > li#text").map { it.text() }
+        val year = document.select("div.col-md-6.col-12(1) > ul.more-info(5) > li#text").text().trim()
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div#film-content").text().trim()
+        val description = document.select("div.mt-2").text().trim()
         val trailer =
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("ul.entry-meta.block-film li:nth-child(7) span").text().toRatingInt()
-        val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
-        val recommendations = document.select("ul#list-film-realted li.item").map {
+            document.select("div.col-md-6.col-12(1) > ul.more-info(6) > li#text").text().toRatingInt()
+        val actors = document.select("div.col-md-6.col-12(2) > ul.more-info(1) > li#text").map { it.text() }
+        val recommendations = document.select("div.list-vod.row.category-tabs-item").map {
             it.toSearchResult()
         }
 
