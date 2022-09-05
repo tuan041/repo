@@ -52,7 +52,7 @@ open class XemphimProvider : MainAPI() {
             "$mainUrl/type/movie" to "Phim Lẻ",
             "$mainUrl/type/show" to "Phim Lẻ",
         )
-        map.forEach {
+        forEach {
             all.add(HomePageList(
                 it.key,
                 document.select(it.value).select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet.is-half-mobile").map { element ->
