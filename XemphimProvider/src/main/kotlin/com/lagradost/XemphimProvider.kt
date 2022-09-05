@@ -46,7 +46,7 @@ class XemphimProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = fixUrlNull(this.selectFirst("a > div.img-4-6 > div.inline > img.ls-is-cached.lazyloaded")?.attr("data-src"))
+        val posterUrl = fixUrlNull(this.selectFirst("div.item.col-lg-2.col-md-3.col-sm-4.col-6 > a > div.img-4-6 > div.inline > img.ls-is-cached.lazyloaded")?.attr("src"))
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
@@ -70,7 +70,7 @@ class XemphimProvider : MainAPI() {
         val link = "$mainUrl/tim-kiem-phim/?keyword=$query"
         val document = app.get(link).document
 
-        return document.select("div.list-vod.row.category-tabs-item").map {
+        return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
     }
@@ -84,7 +84,7 @@ class XemphimProvider : MainAPI() {
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text() }
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2) > #text").isNotEmpty()
+        val tvType = if (document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
@@ -92,7 +92,7 @@ class XemphimProvider : MainAPI() {
                 ?.substringBefore("\",")
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().substringAfter(": ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info#text").map { it.text() }
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").removePrefix("Diễn viên: ").map { it.text() }
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
             it.toSearchResult()
         }
