@@ -25,7 +25,8 @@ class XemphimProvider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/phim/phim-chieu-rap/" to "Phim Chiếu Rạp",
+        "$mainUrl/phim/khong-the-bo-lo/trang-" to "Không Thể Bỏ Lỡ",
+        "$mainUrl/phim/phim-chieu-rap/trang-" to "Phim Chiếu Rạp",
         "$mainUrl/phim/phim-le/trang-" to "Phim Lẻ",
         "$mainUrl/phim/phim-bo/trang-" to "Phim Bộ",
         "$mainUrl/phim/hoat-hinh/trang-" to "Hoạt hình",
@@ -84,7 +85,7 @@ class XemphimProvider : MainAPI() {
             }.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div#myTabContent.tab-content").isNotEmpty()
+        val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2 > p").text().trim()
         val trailer =
