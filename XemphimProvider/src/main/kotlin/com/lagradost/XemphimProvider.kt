@@ -3,6 +3,7 @@ package com.lagradost
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
+import com.lagradost.cloudstream3.LoadResponse.Companion.addDuration
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.ExtractorLink
@@ -98,9 +99,10 @@ class XemphimProvider : MainAPI() {
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
+        var duration = document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")?.text()?.trim().substringAfter(": ")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")
             .mapNotNull { tag ->
-                tag.text().trim().substringAfter(": ")
+                tag.text().trim().substringAfter(": ").removeSuffix(",")
             }.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
@@ -135,7 +137,7 @@ class XemphimProvider : MainAPI() {
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
                 val episode =
-                    it.select("ul.list-episodes.row > li > a").text().trim().toIntOrNull()
+                    docEpisodes.select("ul.list-episodes.row > li > a").text().trim().toIntOrNull()
                 val name = "$episode"
                 Episode(
                     data = href,
