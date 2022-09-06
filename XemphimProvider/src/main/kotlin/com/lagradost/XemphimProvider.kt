@@ -13,7 +13,7 @@ import org.jsoup.nodes.Element
 
 class XemphimProvider : MainAPI() {
     override var mainUrl = "https://247phim.com"
-    override var name = "Xemphim"
+    override var name = "247Phim"
     override val hasMainPage = true
     override var lang = "vi"
     override val hasDownloadSupport = true
@@ -137,7 +137,7 @@ class XemphimProvider : MainAPI() {
                 val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
                 val episode =
                     it.select("ul.list-episodes.row > li > a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
-                val name = "Tập $episode"
+                val name = it.select("ul.list-episodes.row > li > a").text().trim()
                 Episode(
                     data = href,
                     name = name,
