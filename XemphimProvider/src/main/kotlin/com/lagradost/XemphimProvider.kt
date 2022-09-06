@@ -99,9 +99,10 @@ class XemphimProvider : MainAPI() {
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        var duration = document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")?.text()?.trim().substringAfter(": ")
-        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")
-            .mapNotNull { tag ->
+        var duration = if (tvType == TvType.TvSeries)
+            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().substringAfter(": ")
+            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().substringAfter(": ")
+        val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag ->
                 tag.text().trim().substringAfter(": ").removeSuffix(",")
             }.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
@@ -113,8 +114,7 @@ class XemphimProvider : MainAPI() {
             document.select("div.func.mt-2 > a.trailer").last()?.data()
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")
-            .mapNotNull { actor ->
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").mapNotNull { actor ->
                 actor.text().trim().substringAfter(": ")
             }.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
