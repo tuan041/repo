@@ -75,7 +75,7 @@ class XemphimProvider : MainAPI() {
         return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
                 val titleHeader = if (it.select("p:nth-child(1)").isNotEmpty())
-                    it.select("p:nth-child(1)") else it.select("p:nth-child(2)")?: return@mapNotNull null
+                    it.select("p:nth-child(1)") else it.select("p.subtitle")?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
@@ -97,8 +97,8 @@ class XemphimProvider : MainAPI() {
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val duration = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)")!!.text().trim().substringAfter(": ").substringBefore(" phút")
-            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")!!.text().trim().substringAfter(": ").substringBefore(" phút")
+            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().substringAfter(": ").substringBefore(" phút")
+            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().substringAfter(": ").substringBefore(" phút")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
