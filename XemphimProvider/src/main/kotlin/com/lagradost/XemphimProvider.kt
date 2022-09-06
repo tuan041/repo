@@ -45,10 +45,10 @@ class XemphimProvider : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse {
         val title = 
-            if (this.selectFirst("h3")?.text()?.trim().toString().isEmpty()) {
-                this.selectFirst("p")?.text()?.trim().toString()
-            } else if (this.selectFirst("p")?.text()?.trim().toString().isEmpty()) {
+            if (this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) {
                 this.selectFirst("h3")?.text()?.trim().toString()
+            } else if (this.selectFirst("p")?.text()?.trim().toString().isNotEmpty()) {
+                this.selectFirst("p")?.text()?.trim().toString()
             } else {
                 this.selectFirst("p.subtitle")?.text()?.trim().toString().toString()
             }
@@ -83,7 +83,8 @@ class XemphimProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title = document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString()
+        val title = if (document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString().isNotEmpty())
+            document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")
@@ -120,10 +121,10 @@ class XemphimProvider : MainAPI() {
         
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(url).document
-            val episodes = docEpisodes.select("ul#list_episodes > li").map {
-                val href = it.select("a").attr("href")
+            val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
+                val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
                 val episode =
-                    it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
+                    it.select("ul.list-episodes.row > li > a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
                 val name = "Episode $episode"
                 Episode(
                     data = href,
