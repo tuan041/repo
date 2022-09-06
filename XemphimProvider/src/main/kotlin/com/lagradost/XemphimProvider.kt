@@ -44,7 +44,8 @@ class XemphimProvider : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = this.selectFirst("p")?.text()?.trim().toString()
+        val title = if (this.selectFirst("p")?.text()?.trim().toString().isNotEmpty()) 
+            this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("h3")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
@@ -87,10 +88,9 @@ class XemphimProvider : MainAPI() {
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div.detail > div.mt-2 > p").text().trim()
+        val description = document.select("div.detail > div.mt-2").text().trim()
         val trailer =
-            document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
-                ?.substringBefore("\",")
+            document.select("div.func.mt-2 > a.trailer").last()?.data()
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
         @Suppress("NAME_SHADOWING") val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")
