@@ -102,8 +102,8 @@ class XemphimProvider : MainAPI() {
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val duration = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)")!!.text().trim().substringAfter(": ").substringBefore(" phút").toIntOrNull()
-            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")!!.text().trim().substringAfter(": ").substringBefore(" phút").toIntOrNull()
+            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)")!!.text().trim().substringAfter(": ").substringBefore(" phút")
+            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")!!.text().trim().substringAfter(": ").substringBefore(" phút")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(",Phim") }.toList()
@@ -144,7 +144,7 @@ class XemphimProvider : MainAPI() {
                 Episode(
                     data = href,
                     name = name,
-                    episode = episode,
+                    episode = null,
                 )
             }
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
