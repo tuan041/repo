@@ -30,7 +30,9 @@ class XemphimProvider : MainAPI() {
         "$mainUrl/phim/phim-chieu-rap/trang-" to "Phim Chiếu Rạp",
         "$mainUrl/phim/phim-le/trang-" to "Phim Lẻ",
         "$mainUrl/phim/phim-bo/trang-" to "Phim Bộ",
-        "$mainUrl/phim/hoat-hinh/trang-" to "Hoạt hình",
+        "$mainUrl/phim/hoat-hinh/trang-" to "Phim hoạt hình",
+        "$mainUrl/phim/sieu-anh-hung/trang-" to "Phim siêu anh hùng",
+
     )
 
     override suspend fun getMainPage(
@@ -99,9 +101,9 @@ class XemphimProvider : MainAPI() {
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        var duration = if (tvType == TvType.TvSeries)
-            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().substringAfter(": ")
-            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().substringAfter(": ")
+        var duration = if (document.select("div#myTabContent.tab-content").isNotEmpty())
+            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)")?.text()?.trim()?.substringAfter(": ")
+            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")?.text()?.trim()?.substringAfter(": ")
         val tags = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag ->
                 tag.text().trim().substringAfter(": ").removeSuffix(",")
             }.toList()
