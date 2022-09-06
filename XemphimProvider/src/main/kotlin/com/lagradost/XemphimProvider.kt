@@ -59,14 +59,6 @@ class XemphimProvider : MainAPI() {
                     addQuality(quality)
                 }
             }
-                AnimeSearchResponse(
-                    title,
-                    href,
-                    this.name,
-                    TvType.Movie,
-                    posterUrl,
-                    quality = quality
-                )
         }
         return newHomePageResponse(request.name, home)
     }
