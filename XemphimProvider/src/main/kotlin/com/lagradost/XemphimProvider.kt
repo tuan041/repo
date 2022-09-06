@@ -39,34 +39,33 @@ class XemphimProvider : MainAPI() {
         val document = app.get(request.data + page).document
         val home = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
             val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-            val titleHeader = if (it.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) 
+            val title = if (it.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) 
                 it.selectFirst("h3")?.text()?.trim().toString() else it.selectFirst("p.subtitle")?.text()?.trim().toString()
                 ?: return@mapNotNull null
-            val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
-            val recTitle = titleHeader.text() ?: return@mapNotNull null
-            val poster = main.select("img").attr("src") ?: return@mapNotNull null
-            val temp = this.select("span.ribbon").text()
+            val href = it.select("a").attr("href") ?: return@mapNotNull null
+            val posterUrl = main.select("img").attr("src") ?: return@mapNotNull null
+            val temp = it.select("span.ribbon").text()
             return if (temp.contains(Regex("\\d"))) {
                 val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
                 newAnimeSearchResponse(title, href, TvType.TvSeries) {
-                    this.posterUrl = posterUrl
+                    it.posterUrl = posterUrl
                     addSub(episode)
                 }
             } else {
                 val quality =
                     temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
                 newMovieSearchResponse(title, href, TvType.Movie) {
-                    this.posterUrl = posterUrl
+                    it.posterUrl = posterUrl
                     addQuality(quality)
                 }
             }
-                MovieSearchResponse(
-                    recTitle,
-                    recUrl,
+                AnimeSearchResponse(
+                    title,
+                    href,
                     this.name,
                     TvType.Movie,
-                    poster,
-                    episode
+                    posterUrl,
+                    quality = quality
                 )
         }
         return newHomePageResponse(request.name, home)
