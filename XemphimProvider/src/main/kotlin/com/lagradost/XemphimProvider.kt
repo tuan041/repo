@@ -140,8 +140,10 @@ class XemphimProvider : MainAPI() {
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
                 val episode =
-                    (it.select("a").text()).let
-                        { str -> Regex("""\d+""").find(str)?.groupValues?.firstOrNull()?.toIntOrNull()
+                    (it.select("a").text()
+                        ?: episodes).let { str ->
+                        Regex("""\d+""").find(str)?.groupValues?.firstOrNull()
+                            ?.toIntOrNull()
                         } ?: episode
                 val name = "Tập $episode"
                 Episode(
