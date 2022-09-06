@@ -139,7 +139,7 @@ class XemphimProvider : MainAPI() {
             val docEpisodes = app.get(url).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
-                val episode = it.select("a").text().trim().toIntOrNull()
+                val episode = it.select("a").text().replace(Regex(""), "").trim().toIntOrNull()
                 val name = "Tập $episode"
                 Episode(
                     data = href,
@@ -153,10 +153,9 @@ class XemphimProvider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
+                this.duration = duration
                 addActors(actors)
                 this.recommendations = recommendations
-                addTrailer(trailer)
-                addDuration(duration)
             }
         } else {
             newMovieLoadResponse(title, url, TvType.Movie, link) {
@@ -165,10 +164,9 @@ class XemphimProvider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
+                this.duration = duration
                 addActors(actors)
                 this.recommendations = recommendations
-                addTrailer(trailer)
-                addDuration(duration)
             }
         }
     }
