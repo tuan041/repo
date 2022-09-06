@@ -47,14 +47,8 @@ class XemphimProvider : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = 
-            if (this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) {
-                this.selectFirst("h3")?.text()?.trim().toString()
-            } else if (this.selectFirst("p")?.text()?.trim().toString().isNotEmpty()) {
-                this.selectFirst("p")?.text()?.trim().toString()
-            } else {
-                this.selectFirst("p.subtitle")?.text()?.trim().toString().toString()
-            }
+        val title = if (this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty())
+            this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
@@ -106,7 +100,7 @@ class XemphimProvider : MainAPI() {
             else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")!!.text().trim().substringAfter(": ").substringBefore(" phút")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
-            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(",Phim") }.toList()
+            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
         val year = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(6)").text().trim().takeLast(4).toIntOrNull()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
