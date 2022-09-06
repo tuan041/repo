@@ -45,11 +45,7 @@ class XemphimProvider : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse {
         val title = 
-            if ( if ( this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) 
-                    this.selectFirst("h3")?.text()?.trim().toString()
-                else this.selectFirst("p")?.text()?.trim().toString()).isNotEmpty())
-                this.selectFirst("p")?.text()?.trim().toString()
-            else this.selectFirst("p.subtitle")?.text()?.trim().toString()
+            if ( if ( this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p")?.text()?.trim().toString()).isNotEmpty()) this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
