@@ -38,34 +38,18 @@ class XemphimProvider : MainAPI() {
     ): HomePageResponse {
         val document = app.get(request.data + page).document
         val home = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
-            val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-            val title = if (it.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) 
-                it.selectFirst("h3")?.text()?.trim().toString() else it.selectFirst("p.subtitle")?.text()?.trim().toString()
-                ?: return@mapNotNull null
-            val href = it.select("a").attr("href") ?: return@mapNotNull null
-            val posterUrl = main.select("img").attr("src") ?: return@mapNotNull null
-            val temp = it.select("span.ribbon").text()
-            return if (temp.contains(Regex("\\d"))) {
-                val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
-                newAnimeSearchResponse(title, href, TvType.TvSeries) {
-                    it.posterUrl = posterUrl
-                    addSub(episode)
-                }
-            } else {
-                val quality =
-                    temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
-                newMovieSearchResponse(title, href, TvType.Movie) {
-                    it.posterUrl = posterUrl
-                    addQuality(quality)
-                }
-            }
+            it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = if (this.selectFirst("p")?.text()?.trim().toString().isNotEmpty()) 
-            this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
+        val title = 
+            if ( if ( this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) 
+                    this.selectFirst("h3")?.text()?.trim().toString()
+                else this.selectFirst("p")?.text()?.trim().toString()).isNotEmpty())
+                this.selectFirst("p")?.text()?.trim().toString()
+            else this.selectFirst("p.subtitle")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
