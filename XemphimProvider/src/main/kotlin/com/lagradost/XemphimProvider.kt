@@ -38,14 +38,43 @@ class XemphimProvider : MainAPI() {
     ): HomePageResponse {
         val document = app.get(request.data + page).document
         val home = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
-            it.toSearchResult()
+            val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
+            val titleHeader = if (it.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) 
+                it.selectFirst("h3")?.text()?.trim().toString() else it.selectFirst("p.subtitle")?.text()?.trim().toString()
+                ?: return@mapNotNull null
+            val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
+            val recTitle = titleHeader.text() ?: return@mapNotNull null
+            val poster = main.select("img").attr("src") ?: return@mapNotNull null
+            val temp = this.select("span.ribbon").text()
+            return if (temp.contains(Regex("\\d"))) {
+                val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
+                newAnimeSearchResponse(title, href, TvType.TvSeries) {
+                    this.posterUrl = posterUrl
+                    addSub(episode)
+                }
+            } else {
+                val quality =
+                    temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
+                newMovieSearchResponse(title, href, TvType.Movie) {
+                    this.posterUrl = posterUrl
+                    addQuality(quality)
+                }
+            }
+                MovieSearchResponse(
+                    recTitle,
+                    recUrl,
+                    this.name,
+                    TvType.Movie,
+                    poster,
+                    episode
+                )
         }
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse {
         val title = if (this.selectFirst("p")?.text()?.trim().toString().isNotEmpty()) 
-            this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("h3")?.text()?.trim().toString()
+            this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
@@ -88,12 +117,12 @@ class XemphimProvider : MainAPI() {
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div.detail > div.mt-2").text().trim()
+        val description = document.select("div.detail > div.mt-2").text().trim().substringAfter("Play ")
         val trailer =
             document.select("div.func.mt-2 > a.trailer").last()?.data()
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        @Suppress("NAME_SHADOWING") val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info")
             .mapNotNull { actor ->
                 actor.text().trim().substringAfter(": ")
             }.toList()
