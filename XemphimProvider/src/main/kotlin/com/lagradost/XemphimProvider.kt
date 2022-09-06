@@ -75,8 +75,19 @@ class XemphimProvider : MainAPI() {
         val link = "$mainUrl/tim-kiem-phim/?keyword=$query"
         val document = app.get(link).document
 
-        return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").map {
-            it.toSearchResult()
+        return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
+                val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
+                val titleHeader = it.select("p") ?: return@mapNotNull null
+                val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
+                val recTitle = titleHeader.text() ?: return@mapNotNull null
+                val poster = main.select("img").attr("src") ?: return@mapNotNull null
+                MovieSearchResponse(
+                    recTitle,
+                    recUrl,
+                    this.name,
+                    TvType.Movie,
+                    poster,
+                )
         }
     }
 
@@ -124,8 +135,8 @@ class XemphimProvider : MainAPI() {
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
                 val episode =
-                    it.select("ul.list-episodes.row > li > a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
-                val name = "Episode $episode"
+                    it.select("ul.list-episodes.row > li > a").text().trim().toIntOrNull()
+                val name = "$episode"
                 Episode(
                     data = href,
                     name = name,
