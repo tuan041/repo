@@ -105,8 +105,8 @@ class XemphimProvider : MainAPI() {
             document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)")!!.text().trim().substringAfter(": ").substringBefore(" phút").toIntOrNull()
             else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)")!!.text().trim().substringAfter(": ").substringBefore(" phút").toIntOrNull()
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").removeSuffix(",") }.toList()
-            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").removeSuffix(",") }.toList()
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
+            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(",Phim") }.toList()
         val year = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(6)").text().trim().takeLast(4).toIntOrNull()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
@@ -140,7 +140,7 @@ class XemphimProvider : MainAPI() {
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
                 val episode = it.select("a").text().trim().substringAfter("Tập ").toIntOrNull()
-                val name = "$episode"
+                val name = "Tập $episode"
                 Episode(
                     data = href,
                     name = name,
@@ -153,7 +153,7 @@ class XemphimProvider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                this.duration = duration
+                addDuration(duration)
                 addActors(actors)
                 this.recommendations = recommendations
             }
@@ -164,7 +164,7 @@ class XemphimProvider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                this.duration = duration
+                addDuration(duration)
                 addActors(actors)
                 this.recommendations = recommendations
             }
