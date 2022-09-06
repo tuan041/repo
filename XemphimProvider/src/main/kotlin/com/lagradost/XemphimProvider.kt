@@ -45,7 +45,9 @@ class XemphimProvider : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse {
         val title = 
-            if ( if ( this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty()) this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p")?.text()?.trim().toString()).isNotEmpty()) this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
+            if ( if ( this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty() as boolean)
+                this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p")?.text()?.trim().toString()).isNotEmpty() as boolean)
+            this.selectFirst("p")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
@@ -86,7 +88,7 @@ class XemphimProvider : MainAPI() {
             }.toList()
         val year = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4)
             .toIntOrNull()
-        val tvType = if (document.select("div.latest-episode").isNotEmpty()
+        val tvType = if (document.select("div#myTabContent.tab-content").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2").text().trim().substringAfter("Play ")
         val trailer =
@@ -113,7 +115,7 @@ class XemphimProvider : MainAPI() {
         }
         
         return if (tvType == TvType.TvSeries) {
-            val docEpisodes = app.get(link).document
+            val docEpisodes = app.get(url).document
             val episodes = docEpisodes.select("ul#list_episodes > li").map {
                 val href = it.select("a").attr("href")
                 val episode =
