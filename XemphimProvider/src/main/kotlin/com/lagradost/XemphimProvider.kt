@@ -48,7 +48,7 @@ class XemphimProvider : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse {
         val title = if (this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty())
-            this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString().toString()
+            this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
@@ -97,8 +97,8 @@ class XemphimProvider : MainAPI() {
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val duration = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().removePrefix("Thời lượng: ")
-            else document.selectFirst("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().removePrefix("Thời lượng: ")
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().removePrefix("Thời lượng: ")
+            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().removePrefix("Thời lượng: ")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
