@@ -100,8 +100,8 @@ class XemphimProvider : MainAPI() {
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().removePrefix("Thời lượng: ")
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().removePrefix("Thời lượng: ")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
-            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").mapNotNull { tag -> tag.text().trim().substringAfter(": ").substringBefore(", Phim") }.toList()
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)")text().trim().substringAfter(": ").mapNotNull { it.text() }
+            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)")text().trim().substringAfter(": ").mapNotNull { it.text() }
         val year = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(6)").text().trim().takeLast(4).toIntOrNull()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
