@@ -45,12 +45,12 @@ class XemphimProvider : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse {
         val title = 
-            if (this.selectFirst("h3")?.text()?.trim().isEmpty()) {
-                this.selectFirst("p")?.text()?.trim()
-            } else if (this.selectFirst("p")?.text()?.trim().isEmpty()) {
-                this.selectFirst("h3")?.text()?.trim()
+            if (this.selectFirst("h3")?.text()?.trim().toString().isEmpty()) {
+                this.selectFirst("p")?.text()?.trim().toString()
+            } else if (this.selectFirst("p")?.text()?.trim().toString().isEmpty()) {
+                this.selectFirst("h3")?.text()?.trim().toString()
             } else {
-                this.selectFirst("p.subtitle")?.text()?.trim().toString()
+                this.selectFirst("p.subtitle")?.text()?.trim().toString().toString()
             }
         return title
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
