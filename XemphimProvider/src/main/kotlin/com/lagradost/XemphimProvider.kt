@@ -74,7 +74,8 @@ class XemphimProvider : MainAPI() {
 
         return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val titleHeader = it.select("p") ?: return@mapNotNull null
+                val titleHeader = if (it.select("p:nth-child(1)").isNotEmpty())
+                    it.select("p:nth-child(1)") else it.select("p:nth-child(2)")?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
@@ -116,7 +117,8 @@ class XemphimProvider : MainAPI() {
             }.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val titleHeader = it.select("h4") ?: return@mapNotNull null
+                val titleHeader = if (it.select("h4").isNotEmpty())
+                    it.select("h4") else it.select("p.subtitle") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
@@ -138,7 +140,7 @@ class XemphimProvider : MainAPI() {
                 Episode(
                     data = href,
                     name = name,
-                    episode = null,
+                    episode = episode,
                 )
             }
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
