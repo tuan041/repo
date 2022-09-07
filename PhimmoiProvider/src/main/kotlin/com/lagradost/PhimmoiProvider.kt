@@ -169,7 +169,7 @@ class PhimmoiProvider : MainAPI() {
                     }
                 }
             }
-            return TvSeriesLoadResponse(
+            return newTvSeriesLoadResponse(
                 title,
                 url,
                 this.name,
@@ -179,11 +179,10 @@ class PhimmoiProvider : MainAPI() {
                 year?.toIntOrNull(),
                 descipt,
                 null,
-                rating
-            ) {
-                this.tags = tags
-                addActors(cast)
-            }
+                rating,
+                cast,
+                tags
+            )
         } else {
             return newMovieLoadResponse(
                 title,
