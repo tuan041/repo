@@ -179,10 +179,11 @@ class PhimmoiProvider : MainAPI() {
                 year?.toIntOrNull(),
                 descipt,
                 null,
-                rating,
-                cast,
-                tags
-            )
+                rating
+            ) {
+                this.tags = tags
+                addActors(cast)
+            }
         } else {
             return newMovieLoadResponse(
                 title,
