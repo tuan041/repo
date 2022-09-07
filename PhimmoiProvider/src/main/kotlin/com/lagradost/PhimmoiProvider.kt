@@ -120,12 +120,12 @@ class PhimmoiProvider : MainAPI() {
         var tags: List<String>? = null
         var cast: List<String>? = null
         document.select("div.Description > p").forEach { element ->
-            val type = element?.select("span")?.text() ?: return@forEach
+            val newtype = element.select("span")!!.text() ?: return@forEach
             when {
-                type.contains("Genre") -> {
+                newtype.contains("Genre") -> {
                     tags = element.select("a").mapNotNull { it.text() }
                 }
-                type.contains("Cast") -> {
+                newtype.contains("Cast") -> {
                     cast = element.select("a").mapNotNull { it.text() }
                 }
             }
