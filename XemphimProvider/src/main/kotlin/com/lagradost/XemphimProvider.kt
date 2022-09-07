@@ -73,7 +73,7 @@ class XemphimProvider : MainAPI() {
 
         return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val titleHeader = it.select("p") ?: return@mapNotNull null
+                val titleHeader = it.select("p:first-child") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
@@ -94,12 +94,8 @@ class XemphimProvider : MainAPI() {
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        val duration = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(2)").text().trim().removePrefix("Thời lượng: ")
-            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(1)").text().trim().removePrefix("Thời lượng: ")
-        val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().trim().substringAfter(": ").substringBefore(", Phim") }
-            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text().trim().substringAfter(": ").substringBefore(", Phim") }
+        val tags = document.select("div.col-md-6.col-12:nth-child").map {
+            it.text().trim().substringAfter("Thể loại: ").substringBefore(", Phim") }
         val year = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(6)").text().trim().takeLast(4).toIntOrNull()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
@@ -145,7 +141,6 @@ class XemphimProvider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                addDuration(duration)
                 addActors(actors)
                 this.recommendations = recommendations
             }
@@ -156,7 +151,6 @@ class XemphimProvider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                addDuration(duration)
                 addActors(actors)
                 this.recommendations = recommendations
             }
@@ -191,12 +185,13 @@ class XemphimProvider : MainAPI() {
         }.first()
 
         listOf(
+            Pair("https://xemtv24h.com/statics/fmp4/films10/$key", "247PHIM"),
             Pair("https://so-trym.topphimmoi.org/hlspm/$key", "PMFAST"),
             Pair("https://dash.megacdn.xyz/hlspm/$key", "PMHLS"),
             Pair("https://dash.megacdn.xyz/dast/$key/index.m3u8", "PMBK")
         ).apmap { (link, source) ->
             safeApiCall {
-                if (source == "PMBK") {
+                if (source == "247PHIM") {
                     callback.invoke(
                         ExtractorLink(
                             source,
