@@ -94,20 +94,10 @@ class PhimmoiProvider : MainAPI() {
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
         val rating =
-            document.select("ul.entry-meta.block-film li:nth-child(7)").text().trim().substringAfter("IMDb:").toRatingInt()
+            document.select("ul.entry-meta.block-film li:nth-child(6)").text().trim().substringAfter("IMDb:").toRatingInt()
         val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
-        val recommendations = document.select("ul#list-film-realted li.item").mapNotNull {
-                val main = it.select("ul#list-film-realted li.item")
-                val recUrl = it.select("a").attr("href")
-                val recTitle = it.select("p").text()
-                val posterUrl = decode(main.select("a > img.lazyloaded").attr("data-src").substringAfter("url="))
-                MovieSearchResponse(
-                    recTitle,
-                    recUrl,
-                    this.name,
-                    TvType.Movie,
-                    posterUrl,
-                )
+        val recommendations = document.select("ul#list-film-realted li.item").map {
+            it.toSearchResult()
         }
 
         return if (tvType == TvType.TvSeries) {
