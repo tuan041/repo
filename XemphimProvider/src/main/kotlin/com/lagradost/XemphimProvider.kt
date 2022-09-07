@@ -108,10 +108,9 @@ class XemphimProvider : MainAPI() {
             }.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val titleHeader = if (it.select("h4").isNotEmpty())
-                    it.select("h4") else it.select("p.subtitle") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
-                val recTitle = titleHeader.text() ?: return@mapNotNull null
+                val recTitle = if (it.select("h4").text().isNotEmpty())
+                    it.select("h4").text() else it.select("p.subtitle").text()
                 val poster = main.select("img").attr("src")
                 MovieSearchResponse(
                     recTitle,
