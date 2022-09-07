@@ -72,7 +72,7 @@ class XemphimProvider : MainAPI() {
 
         return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val titleHeader = it.select("p:nth-child(1)") ?: return@mapNotNull null
+                val titleHeader = main.select("p:nth-child(1)") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
@@ -93,14 +93,19 @@ class XemphimProvider : MainAPI() {
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
         val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
-        val tags = document.select("div.col-md-6.col-12").mapNotNull { it.text().trim().substringAfter("Thể loại: ").substringBefore(", Phim") }
+        val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().trim().substringAfter(": ").substringBefore(", Phim") }
+            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text().trim().substringAfter(": ").substringBefore(", Phim") }
         val year = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(6)").text().trim().takeLast(4).toIntOrNull()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
         val tvType = if (document.select("div#myTabContent.tab-content").isNotEmpty()) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2").text().trim().substringAfter("Play ")
-        val rating = document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
-        val actors = document.select("div.col-md-6.col-12").mapNotNull { it.text().trim().substringAfter("Diễn viên: ") }
+        val rating =
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
+        val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").mapNotNull { actor ->
+                actor.text().trim().substringAfter(": ")
+            }.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
                 val titleHeader = if (it.select("h4").isNotEmpty())
