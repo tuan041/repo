@@ -2,7 +2,6 @@ package com.lagradost
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.logError
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
@@ -114,8 +113,6 @@ class PhimmoiProvider : MainAPI() {
         val rating =
             document.selectFirst("div.Vote > div.post-ratings > span")?.text()?.toRatingInt()
         val year = document.selectFirst("span.Date")?.text()
-        val token = document.select("script.funciones_public_functions-js-extra")?.text()?.trim()?.substringAfter("/embed")?.substringBefore("\" frameborder")?.takeLast(11)
-        val youtubeTrailer = "www.youtube.com/embed/$token"
         val backgroundPoster =
             fixUrlNull(document.selectFirst("div.Image > figure > img")?.attr("src"))
         var tags: List<String>? = null
@@ -131,6 +128,28 @@ class PhimmoiProvider : MainAPI() {
                 }
             }
         }
+        
+        val recommendations = document.select("div.owl-stage-outer > div.owl-item")
+        return recommendations.map { recommendations ->
+            val href = recommendations.selectFirst("a").attr("href")
+            val title = recommendations.selectFirst("h2.Title")!!.text()
+            val img = fixUrl(recommendations.selectFirst("> div.Image > figure > img")!!.attr("data-src"))
+            val type = getType(href)
+            if (type == TvType.Movie) {
+                MovieSearchResponse(title, href, this.name, type, img, null)
+            } else {
+                TvSeriesSearchResponse(
+                    title,
+                    href,
+                    this.name,
+                    type,
+                    img,
+                    null,
+                    null
+                )
+            }
+        }
+        
         if (type == TvType.TvSeries) {
             val list = ArrayList<Pair<Int, String>>()
 
@@ -181,8 +200,8 @@ class PhimmoiProvider : MainAPI() {
                 this.plot = descipt
                 this.tags = tags
                 this.rating = rating
+                this.recommendations = recommendations
                 addActors(cast)
-                addTrailer(youtubeTrailer)
             }
         } else {
             return newMovieLoadResponse(
@@ -196,8 +215,8 @@ class PhimmoiProvider : MainAPI() {
                 this.plot = descipt
                 this.tags = tags
                 this.rating = rating
+                this.recommendations = recommendations
                 addActors(cast)
-                addTrailer(youtubeTrailer)
             }
         }
     }
