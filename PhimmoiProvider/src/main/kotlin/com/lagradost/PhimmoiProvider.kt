@@ -49,7 +49,7 @@ class PhimmoiProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p,h3")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = decode(this.selectFirst("a > img")?.attr("src").substringAfter("url="))
+        val posterUrl = decode(this.selectFirst("a > img")!!.attr("src").substringAfter("url="))
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
