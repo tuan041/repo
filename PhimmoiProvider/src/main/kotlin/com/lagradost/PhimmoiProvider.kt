@@ -172,17 +172,17 @@ class PhimmoiProvider : MainAPI() {
             return newTvSeriesLoadResponse(
                 title,
                 url,
-                this.name,
-                type,
-                episodeList,
-                backgroundPoster,
-                year?.toIntOrNull(),
-                descipt,
-                null,
-                rating,
-                cast,
-                tags
-            )
+                TvType.TvSeries,
+                episodeList
+            ) {
+                posterUrl = backgroundPoster
+                this.year = year?.toIntOrNull()
+                this.plot = descipt
+                this.tags = tags
+                this.rating = rating
+                addDuration(duration)
+                addActors(cast)
+            }
         } else {
             return newMovieLoadResponse(
                 title,
