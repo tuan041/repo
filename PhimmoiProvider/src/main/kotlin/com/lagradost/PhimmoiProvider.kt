@@ -49,7 +49,7 @@ class PhimmoiProvider : MainAPI() {
     private fun Element.toSearchResult(): SearchResponse {
         val title = this.selectFirst("p,h3")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = decode(this.selectFirst("img")!!.attr("src").substringAfter("url="))
+        val posterUrl = decode(this.selectFirst("a > img")?.attr("src").substringAfter("url="))
         val temp = this.select("span.label").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("(\\((\\d+))|(\\s(\\d+))").find(temp)?.groupValues?.map { num ->
@@ -89,8 +89,8 @@ class PhimmoiProvider : MainAPI() {
             .toIntOrNull()
         val tvType = if (document.select("div.latest-episode").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div#film-content").text().trim()?.substringAfter("Thuyết Minh")
-                ?.substringBefore("@")
+        val description = document.select("div#film-content b:nth-child(2)").text().trim()
+                ?.substringBefore("@phimmoi")
         val trailer =
             document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
                 ?.substringBefore("\",")
