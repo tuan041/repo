@@ -129,11 +129,11 @@ class PhimmoiProvider : MainAPI() {
             }
         }
         
-        val recommendations = document.select("div.owl-stage-outer > div.owl-item")
-        return recommendations.map { recommendations ->
-            val href = recommendations.selectFirst("a").attr("href")
-            val title = recommendations.selectFirst("h2.Title")!!.text()
-            val img = fixUrl(recommendations.selectFirst("> div.Image > figure > img")!!.attr("data-src"))
+        val recommendations = document.select("div.owl-stage-outer > div.owl-item").mapNotNull {
+            val main = it.select("div.owl-stage-outer > div.owl-item")
+            val href = main.select("a").attr("href")
+            val title = main.select("h2.Title")!!.text()
+            val img = fixUrl(main.select("> div.Image > figure > img")!!.attr("data-src"))
             val type = getType(href)
             if (type == TvType.Movie) {
                 MovieSearchResponse(title, href, this.name, type, img, null)
