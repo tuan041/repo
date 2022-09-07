@@ -114,7 +114,8 @@ class PhimmoiProvider : MainAPI() {
         val rating =
             document.selectFirst("div.Vote > div.post-ratings > span")?.text()?.toRatingInt()
         val year = document.selectFirst("span.Date")?.text()
-        val youtubeTrailer = document.select("script.funciones_public_functions-js-extra")?.text()?.trim()?.substringAfter("src=\"")?.substringBefore("\" frameborder").replace("\/", "/")
+        val token = document.select("script.funciones_public_functions-js-extra")?.text()?.trim()?.substringAfter("embed\/")?.substringBefore("\" frameborder")
+        val youtubeTrailer = "www.youtube.com/embed/$token"
         val backgroundPoster =
             fixUrlNull(document.selectFirst("div.Image > figure > img")?.attr("src"))
         var tags: List<String>? = null
