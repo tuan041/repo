@@ -72,10 +72,9 @@ class XemphimProvider : MainAPI() {
 
         return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
                 val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val titleHeader = if (main.select("a > p:nth-child(2)").isNotEmpty())
-                    main.select("a > p:nth-child(2)") else main.select("a > p:nth-child(3)")
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
-                val recTitle = titleHeader.text()
+                val recTitle = if (main.select("a > p:nth-child(2)").text().isNotEmpty())
+                    main.select("a > p:nth-child(2)").text() else main.select("a > p:nth-child(3)").text()
                 val poster = main.select("img").attr("src") ?: return@mapNotNull null
                 MovieSearchResponse(
                     recTitle,
@@ -113,7 +112,7 @@ class XemphimProvider : MainAPI() {
                     it.select("h4") else it.select("p.subtitle") ?: return@mapNotNull null
                 val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
                 val recTitle = titleHeader.text() ?: return@mapNotNull null
-                val poster = main.select("img").attr("src") ?: return@mapNotNull null
+                val poster = main.select("img").attr("src")
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
@@ -185,7 +184,7 @@ class XemphimProvider : MainAPI() {
         }.first()
 
         listOf(
-            Pair("https://xemtv24h.com/statics/fmp4/films10/lordofrings2022ep1/lordofrings2022ep1.m3u8", "247PHIM"),
+            Pair("https://xemtv24h.com/statics/fmp4/films10/lordofrings2022ep1/index.m3u8", "247PHIM"),
             Pair("https://so-trym.topphimmoi.org/hlspm/$key", "PMFAST"),
             Pair("https://dash.megacdn.xyz/hlspm/$key", "PMHLS"),
             Pair("https://dash.megacdn.xyz/dast/$key/index.m3u8", "PMBK")
