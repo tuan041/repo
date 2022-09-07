@@ -117,8 +117,19 @@ class PhimmoiProvider : MainAPI() {
         val duration = document.selectFirst("span.Time")!!.text()
         val backgroundPoster =
             fixUrlNull(document.selectFirst("div.Image > figure > img")?.attr("src"))
-        val actors = document.selectFirst("div.Description > p.Cast.Cast-sh.oh > a").map { it.text() }
-
+        var tags: List<String>? = null
+        var cast: List<String>? = null
+        document.select("div.Description > p").forEach { element ->
+            val type = element?.select("span")?.text() ?: return@forEach
+            when {
+                type.contains("Genre") -> {
+                    tags = element.select("a").mapNotNull { it.text() }
+                }
+                type.contains("Cast") -> {
+                    cast = element.select("a").mapNotNull { it.text() }
+                }
+            }
+        }
         if (type == TvType.TvSeries) {
             val list = ArrayList<Pair<Int, String>>()
 
@@ -169,7 +180,8 @@ class PhimmoiProvider : MainAPI() {
                 descipt,
                 null,
                 rating,
-                actors
+                cast,
+                rating
             )
         } else {
             return newMovieLoadResponse(
@@ -181,9 +193,10 @@ class PhimmoiProvider : MainAPI() {
                 posterUrl = backgroundPoster
                 this.year = year?.toIntOrNull()
                 this.plot = descipt
+                this.tags = tags
                 this.rating = rating
                 addDuration(duration)
-                addActors(actors)
+                addActors(cast)
             }
         }
     }
