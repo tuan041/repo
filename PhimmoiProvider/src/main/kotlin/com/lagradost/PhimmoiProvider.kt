@@ -114,7 +114,7 @@ class PhimmoiProvider : MainAPI() {
         val rating =
             document.selectFirst("div.Vote > div.post-ratings > span")?.text()?.toRatingInt()
         val year = document.selectFirst("span.Date")?.text()
-        val duration = document.selectFirst("span.Time")!!.text()
+        val duration = document.selectFirst("span.Time")?.text()
         val backgroundPoster =
             fixUrlNull(document.selectFirst("div.Image > figure > img")?.attr("src"))
         var tags: List<String>? = null
@@ -181,7 +181,7 @@ class PhimmoiProvider : MainAPI() {
                 null,
                 rating,
                 cast,
-                rating
+                tags
             )
         } else {
             return newMovieLoadResponse(
