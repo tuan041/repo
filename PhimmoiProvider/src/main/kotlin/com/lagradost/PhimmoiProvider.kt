@@ -2,7 +2,7 @@ package com.lagradost
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.LoadResponse.Companion.addDuration
+import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.logError
 import com.lagradost.cloudstream3.utils.ExtractorLink
 import com.lagradost.cloudstream3.utils.loadExtractor
@@ -114,7 +114,7 @@ class PhimmoiProvider : MainAPI() {
         val rating =
             document.selectFirst("div.Vote > div.post-ratings > span")?.text()?.toRatingInt()
         val year = document.selectFirst("span.Date")?.text()
-        val duration = document.selectFirst("span.Time")?.text()
+        val youtubeTrailer = document.selectFirst("div.Modal-Box.Ttrailer.on > div.Modal-Content > iframe")?.attr("src")
         val backgroundPoster =
             fixUrlNull(document.selectFirst("div.Image > figure > img")?.attr("src"))
         var tags: List<String>? = null
@@ -180,8 +180,8 @@ class PhimmoiProvider : MainAPI() {
                 this.plot = descipt
                 this.tags = tags
                 this.rating = rating
-                addDuration(duration)
                 addActors(cast)
+                addTrailer(youtubeTrailer)
             }
         } else {
             return newMovieLoadResponse(
@@ -195,8 +195,8 @@ class PhimmoiProvider : MainAPI() {
                 this.plot = descipt
                 this.tags = tags
                 this.rating = rating
-                addDuration(duration)
                 addActors(cast)
+                addTrailer(youtubeTrailer)
             }
         }
     }
