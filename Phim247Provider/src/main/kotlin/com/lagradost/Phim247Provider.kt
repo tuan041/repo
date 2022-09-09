@@ -5,6 +5,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
+import java.util.Base64
 import java.net.URLDecoder
 
 class Phim247Provider : MainAPI() {
@@ -123,7 +124,7 @@ class Phim247Provider : MainAPI() {
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map.forEach {
                 val href = it.select("li").attr("data-url_web")
                 val episode = 
-                    it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
+                    it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
                 val name = "Tập $episode"
                 Episode(
                     data = href,
@@ -165,7 +166,7 @@ class Phim247Provider : MainAPI() {
             .find { it.data().contains("window.atob('") }?.data()?.let { script ->
                 script.substringAfter("window.atob('").substringBefore("');")
             }
-        val key = decode($raw)
+        val key = String(Base64.getUrlDecoder().decode(raw))
 
         listOf(
             Pair("$key", "247Phim")
