@@ -163,8 +163,8 @@ class Phim247Provider : MainAPI() {
         val document = app.get(data).document
 
         val sources = document.select("body > script")
-            .find { it.data().contains("window.atob('") }?.data()?.let { script ->
-                val id = script.substringAfter("window.atob('").substringBefore("');")
+            .find { it.data().contains("window.atob('") }?.text()?.let { script ->
+                val id = decode(script.substringAfter("window.atob('").substringBefore("');"))
             }
         
         callback.invoke(
