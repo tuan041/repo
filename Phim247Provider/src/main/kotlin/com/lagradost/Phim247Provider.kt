@@ -162,8 +162,8 @@ class Phim247Provider : MainAPI() {
         val document = app.get(data).document
 
         val key = document.select("body > script")
-            .find { it.data().contains("= window.atob('") }?.let { script ->
-                val id = script.substringAfter("= window.atob('").substringBefore("');")
+            .find { it.data().contains("window.atob('") }?.let { script ->
+                val id = script.substringAfter("window.atob('").substringBefore("');")
             }
 
         listOf(
