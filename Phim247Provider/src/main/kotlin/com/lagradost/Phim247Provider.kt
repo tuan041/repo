@@ -68,11 +68,11 @@ class Phim247Provider : MainAPI() {
         val document = app.get(link).document
 
         return document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
-                val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
+                val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6")
+                val recUrl = it.select("a").attr("href")
                 val recTitle = if (main.select("a > p:nth-child(2)").text().isNotEmpty())
                     main.select("a > p:nth-child(2)").text() else main.select("a > p:nth-child(3)").text()
-                val poster = main.select("img").attr("src") ?: return@mapNotNull null
+                val poster = main.select("img").attr("src")
                 MovieSearchResponse(
                     recTitle,
                     recUrl,
@@ -104,8 +104,8 @@ class Phim247Provider : MainAPI() {
                 actor.text().trim().substringAfter(": ")
             }.toList()
         val recommendations = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
-                val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6") ?: return@mapNotNull null
-                val recUrl = it.select("a").attr("href") ?: return@mapNotNull null
+                val main = it.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6")
+                val recUrl = it.select("a").attr("href")
                 val recTitle = if (it.select("h4").text().isNotEmpty())
                     it.select("h4").text() else it.select("p.subtitle").text()
                 val posterUrl = main.select("img").attr("src")
@@ -162,7 +162,7 @@ class Phim247Provider : MainAPI() {
 
         val key = document.select("body > script")
             .find { it.data().contains("var url_cdn = window.atob('") }?.data()?.let { script ->
-                val id = decode(script!!.substringAfter("var url_cdn = window.atob('").substringBefore("');"))
+                val id = script.substringAfter("var url_cdn = window.atob('").substringBefore("');")
             }
 
         listOf(
@@ -174,7 +174,7 @@ class Phim247Provider : MainAPI() {
                         source,
                         source,
                         link,
-                        referer = "$mainUrl/",
+                        referer = "",
                         quality = Qualities.P1080.value,
                         isM3u8 = true,
                     )
