@@ -125,24 +125,15 @@ class Phim247Provider : MainAPI() {
             seasonEpisodesItems.forEach {
                 val episodeTitle = it.select("a").text().trim().toIntOrNull()
                 val episodeData = it.select("li").attr("data-url_web") ?: return@forEach
-
-                episode++
-
-                val episodeNum =
-                    (it.select("a").text()
-                        ?: episodeTitle).let { str ->
-                        Regex("""\d+""").find(str)?.groupValues?.firstOrNull()
-                            ?.toIntOrNull()
-                    } ?: episode
-
+                val episodeNum = it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
                 episodes.add(
                     newEpisode(Pair(url, episodeData)) {
-                        this.name = episodeTitle?.removePrefix("Episode $episodeNum: ")
+                        this.name = episodeTitle
                         this.episode = episodeNum
                     }
                 )
             }
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+            return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
