@@ -88,7 +88,7 @@ class Phim247Provider : MainAPI() {
 
         val title = if (document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString().isNotEmpty())
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
-        val link = document.select("head > link:nth-child(1)").attr("href")
+        val link = document.select("head > link:nth-child(4)").attr("href")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
@@ -161,8 +161,8 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("body > script:nth-child(11)")
-            .find { it.data().contains("var url_cdn = window.atob('") }?.data()?.let { script ->
+        val key = document.select("body > script")
+            .find { it.data().contains("var url_cdn = window.atob('") }?.let { script ->
                 val id = script.substringAfter("var url_cdn = window.atob('").substringBefore("');")
             }
 
