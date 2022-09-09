@@ -160,9 +160,9 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("body script")
-            .find { it.data().contains("window.atob('") }?.data()?.let { script ->
-                val id = script.substringAfter("window.atob('").substringBefore("');")
+        val key = document.select("body > script")
+            .find { it.data().contains("var url_cdn = window.atob('") }?.data()?.let { script ->
+                val id = decode(script!!.substringAfter("var url_cdn = window.atob('").substringBefore("');"))
             }
 
         listOf(
