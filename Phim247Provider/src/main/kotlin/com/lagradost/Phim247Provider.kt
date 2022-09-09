@@ -161,9 +161,9 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("body > script")
-            .find { it.contains("window.atob('") }?.let { script ->
-                script.substringAfter("window.atob('").substringBefore("');"): boolean
+        val key = document.select("body > script:nth-child(16)")
+            .find { it.data().contains("window.atob('") }?.data()?.let { script ->
+                script.substringAfter("window.atob('").substringBefore("');")
             }
 
         listOf(
