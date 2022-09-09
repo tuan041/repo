@@ -3,11 +3,9 @@ package com.lagradost
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
-import com.lagradost.cloudstream3.utils.ExtractorLink
-import com.lagradost.cloudstream3.utils.ExtractorLinkPlayList
-import com.lagradost.cloudstream3.utils.PlayListItem
-import com.lagradost.cloudstream3.utils.Qualities
+import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
+import java.net.URLDecoder
 
 class Phim247Provider : MainAPI() {
     override var mainUrl = "https://247phim.com"
@@ -173,8 +171,8 @@ class Phim247Provider : MainAPI() {
                 this.name,
                 sources,
                 "",
-                Qualities.P1080.value,
-                true,
+                quality = Qualities.P1080.value,
+                isM3u8 = true,
             )
         )
         return true
