@@ -163,8 +163,8 @@ class Phim247Provider : MainAPI() {
 
         val key = document.select("body > script")
             .find { it.contains("window.atob('") }?.let { script ->
-                script.substringAfter("window.atob('").substringBefore("');")
-            } as boolean
+                script.substringAfter("window.atob('").substringBefore("');"): boolean
+            }
 
         listOf(
             Pair("$key", "247Phim")
