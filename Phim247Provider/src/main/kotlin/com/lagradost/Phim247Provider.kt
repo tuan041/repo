@@ -162,16 +162,16 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val sources = decode(document.select("body > script")
+        val sources = document.select("body > script")
             .find { it.data().contains("window.atob('") }?.data()?.let { script ->
                 val id = script.substringAfter("window.atob('").substringBefore("');")
             }
-        )
+        
         callback.invoke(
             ExtractorLink(
                 "Phim247",
                 this.name,
-                link,
+                sources,
                 "",
                 Qualities.P1080.value,
                 true,
