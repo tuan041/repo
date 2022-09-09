@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element
 
 class Phim247Provider : MainAPI() {
     override var mainUrl = "https://247phim.com"
-    override var name = "247Phim"
+    override var name = "Phim247"
     override val hasMainPage = true
     override var lang = "vi"
     override val hasDownloadSupport = true
@@ -90,11 +90,11 @@ class Phim247Provider : MainAPI() {
 
         val title = if (document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString().isNotEmpty())
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
-        val link = document.select("div.row.mt-2 > div.col-6.col-md-3 > button").attr("onclick")
-        val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
+        val link = document.select("div.playerDiv.mb-5.row.mt-3 > div.video_container.col-12").attr("onclick")
+        val poster = app.get(url).document
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
-            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().trim().substringAfter(": ").substringBefore(", Phim") }
-            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text().trim().substringAfter(": ").substringBefore(", Phim") }
+            document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
+            else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
         val year = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(6)").text().trim().takeLast(4).toIntOrNull()
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
@@ -123,8 +123,8 @@ class Phim247Provider : MainAPI() {
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(url).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
-                val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
-                val episode = it.select("a").text().trim().removePrefix("Tập ").toIntOrNull()
+                val href = episodes.select("ul.list-episodes.row > li").attr("data-url_web")
+                val episode = episodes.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
                 val name = "Tập $episode"
                 Episode(
                     data = href,
@@ -162,38 +162,16 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("div#content script")
-            .find { it.data().contains("filmInfo.episodeID =") }?.data()?.let { script ->
-                val id = script.substringAfter("filmInfo.episodeID = parseInt('")
-                app.post(
-                    // Not mainUrl
-                    url = "https://phimmoichills.net/pmplayer.php",
-                    data = mapOf("qcao" to id, "sv" to "0"),
-                    referer = data,
-                    headers = mapOf(
-                        "X-Requested-With" to "XMLHttpRequest",
-                        "Content-Type" to "application/x-www-form-urlencoded; charset=UTF-8"
-                    )
-                ).text.substringAfterLast("iniPlayers(\"")
-                    .substringBefore("\",")
-            }
-
-        listOf(
-            Pair("https://xemtv24h.com/statics/fmp4/films10/lordofrings2022ep1/index.m3u8", "247PHIM"),
-            Pair("https://so-trym.topphimmoi.org/hlspm/$key", "PMFAST"),
-            Pair("https://dash.megacdn.xyz/hlspm/$key", "PMHLS"),
-            Pair("https://dash.megacdn.xyz/dast/$key/index.m3u8", "PMBK")
-        ).apmap { (link, source) ->
-            safeApiCall {
-                callback.invoke(
-                    ExtractorLink(
-                        source,
-                        source,
-                        link,
-                        referer = "$mainUrl/",
-                        quality = Qualities.P1080.value,
-                        isM3u8 = true,
-                    )
+        val link = decode(document.select("body > script").text().substringAfter("window.atob('").substringBefore("');"))
+        callback.invoke(
+            ExtractorLink(
+                this.name,
+                this.name,
+                link,
+                "",
+                Qualities.P1080.value,
+                true,
+            )
                 )
             }
         }
