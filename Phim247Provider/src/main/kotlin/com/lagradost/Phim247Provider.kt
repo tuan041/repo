@@ -120,7 +120,7 @@ class Phim247Provider : MainAPI() {
         
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(url).document
-            val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
+            val episodes = docEpisodes.select("ul.list-episodes.row > li").map.forEach {
                 val href = it.select("li").attr("data-url_web")
                 val episode = 
                     it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
@@ -161,10 +161,11 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("body > script:nth-child(16)")
+        val raw = document.select("body > script:nth-child(16)")
             .find { it.data().contains("window.atob('") }?.data()?.let { script ->
                 script.substringAfter("window.atob('").substringBefore("');")
             }
+        val key = decode($raw)
 
         listOf(
             Pair("$key", "247Phim")
