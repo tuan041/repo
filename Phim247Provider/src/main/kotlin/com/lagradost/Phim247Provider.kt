@@ -121,7 +121,7 @@ class Phim247Provider : MainAPI() {
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(url).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li")
-            .forEach{
+            .forEach{ it ->
                 val href = it.select("li").attr("data-url_web")
                 val episode = 
                     it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
@@ -179,6 +179,7 @@ class Phim247Provider : MainAPI() {
                         source,
                         source,
                         link,
+                        subtitleCallback,
                         referer = "",
                         quality = Qualities.P1080.value,
                         isM3u8 = true,
