@@ -123,8 +123,8 @@ class Phim247Provider : MainAPI() {
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(url).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
-                val href = episodes.select("ul.list-episodes.row > li").attr("data-url_web")
-                val episode = episodes.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
+                val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
+                val episode = it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
                 val name = "Tập $episode"
                 Episode(
                     data = href,
@@ -162,18 +162,21 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val link = decode(document.select("body > script").text().substringAfter("window.atob('").substringBefore("');"))
+        val link = decode(document.select("body > script")
+            .find { it.data().contains("window.atob('") }?.data()?.let { script ->
+                val id = script.substringAfter("window.atob('").substringBefore("');")
+            }
+        )
         callback.invoke(
             ExtractorLink(
-                this.name,
+                "Phim247",
                 this.name,
                 link,
                 "",
                 Qualities.P1080.value,
                 true,
             )
-        }
-        return true
+        )
     }
 
 }
