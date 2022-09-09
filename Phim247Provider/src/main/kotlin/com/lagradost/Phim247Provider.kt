@@ -159,11 +159,11 @@ class Phim247Provider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val document = app.get(data).document
+        val document = app.get(url).document
 
         val key = document.select("body > script")
             .find { it.data().contains("var url_cdn = window.atob('") }?.data()?.let { script ->
-                val id = script.substringAfter("var url_cdn = window.atob('").substringBefore("');")
+                script.substringAfter("var url_cdn = window.atob('").substringBefore("');")
             }
 
         listOf(
