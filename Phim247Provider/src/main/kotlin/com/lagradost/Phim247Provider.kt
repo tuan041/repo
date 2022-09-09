@@ -9,7 +9,7 @@ import java.net.URLDecoder
 
 class Phim247Provider : MainAPI() {
     override var mainUrl = "https://247phim.com"
-    override var name = "Phim247"
+    override var name = "247Phim"
     override val hasMainPage = true
     override var lang = "vi"
     override val hasDownloadSupport = true
@@ -88,7 +88,7 @@ class Phim247Provider : MainAPI() {
 
         val title = if (document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString().isNotEmpty())
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
-        val link = document.select("head > link:nth-child(4)").attr("href")
+        val link = document.select("head > link:nth-child(1)").attr("href")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
@@ -119,10 +119,11 @@ class Phim247Provider : MainAPI() {
         }
         
         return if (tvType == TvType.TvSeries) {
-            val docEpisodes = app.get(url).document
+            val docEpisodes = app.get(link).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
-                val href = it.select("ul.list-episodes.row > li").attr("data-url_web")
-                val episode = it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
+                val href = it.select("li").attr("data-url_web")
+                val episode = 
+                    it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
                 val name = "Tập $episode"
                 Episode(
                     data = href,
@@ -160,13 +161,13 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("body > script")
+        val key = document.select("body > script:nth-child(11)")
             .find { it.data().contains("var url_cdn = window.atob('") }?.data()?.let { script ->
                 val id = script.substringAfter("var url_cdn = window.atob('").substringBefore("');")
             }
 
         listOf(
-            Pair("$key", "Phim247")
+            Pair("$key", "247Phim")
         ).apmap { (link, source) ->
             safeApiCall {
                 callback.invoke(
