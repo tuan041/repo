@@ -90,8 +90,8 @@ class Phim247Provider : MainAPI() {
 
         val title = if (document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString().isNotEmpty())
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
-        val link = document.select("div.playerDiv.mb-5.row.mt-3 > div.video_container.col-12").attr("onclick")
-        val poster = app.get(url).document
+        val link = document.select("head > link:nth-child(4)").attr("href")
+        val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(4)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
@@ -172,8 +172,6 @@ class Phim247Provider : MainAPI() {
                 Qualities.P1080.value,
                 true,
             )
-                )
-            }
         }
         return true
     }
