@@ -169,6 +169,10 @@ class Phim247Provider : MainAPI() {
                 script.substringAfter("window.atob('").substringBefore("');")
             }
         val key = String(Base64.getUrlDecoder().decode(raw))
+        val SubtitleFile = document.select("body > script:nth-child(16)")
+            .find { it.data().contains("var url_sub = '") }?.data()?.let { script ->
+                script.substringAfter("var url_sub = '").substringBefore("';")
+            }
 
         listOf(
             Pair("$key", "247Phim")
@@ -179,7 +183,7 @@ class Phim247Provider : MainAPI() {
                         source,
                         source,
                         link,
-                        subtitleCallback,
+                        subtitleCallback = SubtitleFile,
                         referer = "",
                         quality = Qualities.P1080.value,
                         isM3u8 = true,
