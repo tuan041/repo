@@ -160,21 +160,28 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val sources = document.select("body > script")
-            .find { it.data().contains("window.atob('") }?.text()?.let { script ->
-                val id = decode(script.substringAfter("window.atob('").substringBefore("');"))
+        val key = document.select("body script")
+            .find { it.data().contains("window.atob('") }?.data()?.let { script ->
+                val id = script.substringAfter("window.atob('").substringBefore("');")
             }
-        
-        callback.invoke(
-            ExtractorLink(
-                "Phim247",
-                this.name,
-                sources,
-                "",
-                quality = Qualities.P1080.value,
-                isM3u8 = true,
-            )
-        )
+
+        listOf(
+            Pair("$key", "Phim247")
+        ).apmap { (link, source) ->
+            safeApiCall {
+                callback.invoke(
+                    ExtractorLink(
+                        source,
+                        source,
+                        link,
+                        referer = "$mainUrl/",
+                        quality = Qualities.P1080.value,
+                        isM3u8 = true,
+                    )
+                )
+            }
+        }
         return true
     }
+
 }
