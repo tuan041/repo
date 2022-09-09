@@ -133,7 +133,7 @@ class Phim247Provider : MainAPI() {
                 )
             }
 
-            List<Episode> newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+            List<Episode> (newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
@@ -142,6 +142,7 @@ class Phim247Provider : MainAPI() {
                 addActors(actors)
                 this.recommendations = recommendations
             }
+            )
         } else {
             newMovieLoadResponse(title, url, TvType.Movie, link) {
                 this.posterUrl = poster
