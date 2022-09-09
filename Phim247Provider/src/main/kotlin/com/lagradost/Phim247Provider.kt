@@ -162,9 +162,9 @@ class Phim247Provider : MainAPI() {
         val document = app.get(data).document
 
         val key = document.select("body > script")
-            .find as boolean { it.contains("window.atob('") }?.let { script ->
+            .find { it.contains("window.atob('") }?.let { script ->
                 script.substringAfter("window.atob('").substringBefore("');")
-            }
+            } as boolean
 
         listOf(
             Pair("$key", "247Phim")
