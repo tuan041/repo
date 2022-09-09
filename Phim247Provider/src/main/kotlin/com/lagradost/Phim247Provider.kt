@@ -162,7 +162,7 @@ class Phim247Provider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val link = decode(document.select("body > script")
+        val sources = decode(document.select("body > script")
             .find { it.data().contains("window.atob('") }?.data()?.let { script ->
                 val id = script.substringAfter("window.atob('").substringBefore("');")
             }
@@ -177,6 +177,6 @@ class Phim247Provider : MainAPI() {
                 true,
             )
         )
+        return true
     }
-
 }
