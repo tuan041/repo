@@ -1,6 +1,5 @@
 package com.lagradost
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
@@ -10,7 +9,7 @@ import com.lagradost.cloudstream3.utils.PlayListItem
 import com.lagradost.cloudstream3.utils.Qualities
 import org.jsoup.nodes.Element
 
-class XemphimProvider : MainAPI() {
+class Phim247Provider : MainAPI() {
     override var mainUrl = "https://247phim.com"
     override var name = "247Phim"
     override val hasMainPage = true
@@ -163,24 +162,21 @@ class XemphimProvider : MainAPI() {
     ): Boolean {
         val document = app.get(data).document
 
-        val key = document.select("div#content script").mapNotNull { script ->
-            if (script.data().contains("filmInfo.episodeID =")) {
-                val id = script.data().substringAfter("filmInfo.episodeID = parseInt('")
-                    .substringBefore("');")
+        val key = document.select("div#content script")
+            .find { it.data().contains("filmInfo.episodeID =") }?.data()?.let { script ->
+                val id = script.substringAfter("filmInfo.episodeID = parseInt('")
                 app.post(
                     // Not mainUrl
                     url = "https://phimmoichills.net/pmplayer.php",
-                    data = mapOf("qcao" to id),
+                    data = mapOf("qcao" to id, "sv" to "0"),
                     referer = data,
                     headers = mapOf(
                         "X-Requested-With" to "XMLHttpRequest",
                         "Content-Type" to "application/x-www-form-urlencoded; charset=UTF-8"
                     )
-                ).text.also { println("HERERERR $it") }.substringAfterLast("iniPlayers(\"").substringBefore("\",")
-            } else {
-                null
+                ).text.substringAfterLast("iniPlayers(\"")
+                    .substringBefore("\",")
             }
-        }.first()
 
         listOf(
             Pair("https://xemtv24h.com/statics/fmp4/films10/lordofrings2022ep1/index.m3u8", "247PHIM"),
@@ -189,56 +185,19 @@ class XemphimProvider : MainAPI() {
             Pair("https://dash.megacdn.xyz/dast/$key/index.m3u8", "PMBK")
         ).apmap { (link, source) ->
             safeApiCall {
-                if (source == "247PHIM") {
-                    callback.invoke(
-                        ExtractorLink(
-                            source,
-                            source,
-                            link,
-                            referer = "$mainUrl/",
-                            quality = Qualities.P1080.value,
-                            isM3u8 = true
-                        )
+                callback.invoke(
+                    ExtractorLink(
+                        source,
+                        source,
+                        link,
+                        referer = "$mainUrl/",
+                        quality = Qualities.P1080.value,
+                        isM3u8 = true,
                     )
-                } else {
-                    val playList = app.get(link, referer = "$mainUrl/")
-                        .parsedSafe<ResponseM3u>()?.main?.segments?.map { segment ->
-                            PlayListItem(
-                                segment.link,
-                                (segment.du.toFloat() * 1_000_000).toLong()
-                            )
-                        }
-
-                    callback.invoke(
-                        ExtractorLinkPlayList(
-                            source,
-                            source,
-                            playList ?: return@safeApiCall,
-                            referer = "$mainUrl/",
-                            quality = Qualities.P1080.value,
-                            headers = mapOf(
-//                                "If-None-Match" to "*",
-                                "Origin" to mainUrl,
-                            )
-                        )
-                    )
-                }
+                )
             }
         }
         return true
     }
-
-    data class Segment(
-        @JsonProperty("du") val du: String,
-        @JsonProperty("link") val link: String,
-    )
-
-    data class DataM3u(
-        @JsonProperty("segments") val segments: List<Segment>?,
-    )
-
-    data class ResponseM3u(
-        @JsonProperty("2048p") val main: DataM3u?,
-    )
 
 }
