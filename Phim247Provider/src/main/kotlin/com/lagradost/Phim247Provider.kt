@@ -119,18 +119,20 @@ class Phim247Provider : MainAPI() {
         }
         
         return if (tvType == TvType.TvSeries) {
-            val seasonEpisodes = app.get(url).document
-            var seasonEpisodesItems = seasonEpisodes.select("ul.list-episodes.row > li")
-            seasonEpisodesItems.forEach {
-                val episodeTitle = it.select("a").text().trim().toIntOrNull()
-                val episodeData = it.select("li").attr("data-url_web") ?: return@forEach
-                val episodeNum = it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
-                Episodes(Pair(url, episodeData)) {
-                    this.name = episodeTitle?.removePrefix("$episodeNum:")
-                    this.episode = episodeNum
-                }
+            val docEpisodes = app.get(url).document
+            val episodes = docEpisodes.select("ul.list-episodes.row > li")
+            episodes.forEach{
+                val href = it.select("li").attr("data-url_web")
+                val episode = 
+                    it.select("a").text().removePrefix("Tập ").trim().toIntOrNull()
+                val name = "Tập $episode"
+                Episode(
+                    data = href,
+                    name = name,
+                    episode = episode,
+                )
             }
-            return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
