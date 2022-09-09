@@ -6,7 +6,6 @@ import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
 import java.util.Base64
-import java.net.URLDecoder
 
 class Phim247Provider : MainAPI() {
     override var mainUrl = "https://247phim.com"
@@ -126,8 +125,8 @@ class Phim247Provider : MainAPI() {
                 val episodeTitle = it.select("a").text().trim().toIntOrNull()
                 val episodeData = it.select("li").attr("data-url_web") ?: return@forEach
                 val episodeNum = it.select("a").text().replace(Regex("[^0-9]"), "").trim().toIntOrNull()
-                newEpisode(Pair(url, episodeData)) {
-                    this.name = episodeTitle
+                Episodes(Pair(url, episodeData)) {
+                    this.name = episodeTitle?.removePrefix("$episodeNum:")
                     this.episode = episodeNum
                 }
             }
