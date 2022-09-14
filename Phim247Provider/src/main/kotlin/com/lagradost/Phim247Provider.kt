@@ -119,10 +119,10 @@ class Phim247Provider : MainAPI() {
         }
         
         return if (tvType == TvType.TvSeries) {
-            val episodes = app.get(url).document.select("ul.list-episodes.row > li").map {
+            val episodes = app.get(data).document.select("ul.list-episodes.row > li").map {
                 Episode(
-                    fixUrl(it.attr("data-url_cdn").trim()),
-                    "Tập " + it.selectFirst("a")?.text()?.replace("Tập", "")?.trim()
+                    fixUrl(it.attr("data-url_web").trim()),
+                    "Episode " + it.selectFirst("a")?.text()?.replace("Tập", "")?.trim()
                 )
             }
 
