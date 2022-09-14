@@ -94,6 +94,7 @@ class Phim1080Provider : MainAPI() {
                     this.name,
                     TvType.Movie,
                     posterUrl,
+                    isHorizontalImages = true
                 )
         }
 
@@ -139,19 +140,10 @@ class Phim1080Provider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val document = app.get(data).document
-
-        val raw = document.select("body > script:nth-child(16)")
-            .find { it.data().contains("window.atob('") }?.data()?.let { script ->
-                script.substringAfter("window.atob('").substringBefore("');")
-            }
-        val key = String(Base64.getUrlDecoder().decode(raw))
-        val Subtitle = document.select("body > script:nth-child(16)")
-            .find { it.data().contains("var url_sub = '") }?.data()?.let { script ->
-                script.substringAfter("var url_sub = '").substringBefore("';")
-            }
+        val key = document.select(video.player-video).attr("src")
 
         listOf(
-            Pair("$key", "247Phim")
+            Pair("$key", "Phim1080")
         ).apmap { (link, source) ->
             safeApiCall {
                 callback.invoke(
