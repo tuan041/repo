@@ -123,12 +123,10 @@ class Phim247Provider : MainAPI() {
                 val link = fixUrlNull(entry?.attr("data-url_web")) ?: return@forEach
                 val text = entry?.text() ?: ""
                 val name = text.replace(Regex("(^(\\d+)\\.)"), "")
-                val epNum = text.substring(0, text.indexOf(".")).toIntOrNull()
                 episodes.add(
                     Episode(
                         name = name,
                         data = link,
-                        episode = epNum
                     )
                 )
             }
