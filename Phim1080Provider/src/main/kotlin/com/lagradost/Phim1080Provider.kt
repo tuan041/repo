@@ -139,8 +139,22 @@ class Phim1080Provider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val document = app.get(data).document
-        val key = document.select(div#fimfast-player).attr("src")
-
+        val key = document.select("div#content script")
+            .find { it.data().contains("filmInfo.episodeID =") }?.data()?.let { script ->
+                val id = script.substringAfter("filmInfo.episodeID = parseInt('")
+                app.post(
+                    // Not mainUrl
+                    url = "https://phimmoichills.net/pmplayer.php",
+                    data = mapOf("qcao" to id, "sv" to "0"),
+                    referer = data,
+                    headers = mapOf(
+                        "X-Requested-With" to "XMLHttpRequest",
+                        "Content-Type" to "application/x-www-form-urlencoded; charset=UTF-8"
+                    )
+                ).text.substringAfterLast("iniPlayers(\"")
+                    .substringBefore("\",")
+            }
+            
         listOf(
             Pair("$key", "Phim1080")
         ).apmap { (link, source) ->
