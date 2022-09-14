@@ -94,7 +94,6 @@ class Phim1080Provider : MainAPI() {
                     this.name,
                     TvType.Movie,
                     posterUrl,
-                    isHorizontalImages = true
                 )
         }
 
@@ -140,7 +139,7 @@ class Phim1080Provider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val document = app.get(data).document
-        val key = document.select(video.player-video).attr("src")
+        val key = document.select(div.fimfast-player).attr("src")
 
         listOf(
             Pair("$key", "Phim1080")
