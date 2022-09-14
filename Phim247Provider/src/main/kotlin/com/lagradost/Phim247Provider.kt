@@ -119,9 +119,9 @@ class Phim247Provider : MainAPI() {
                 )
         }
 
-        if (tvType == TvType.TvSeries) {
+        return if (tvType == TvType.TvSeries) {
             val main = app.get(link).document
-            val episodes = mutableListOf<Episode>()
+            val episodes = arrayListOf<Episode>()
             main.select("ul.list-episodes.row > li").forEach {
                 entry ->
                     val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
@@ -134,7 +134,7 @@ class Phim247Provider : MainAPI() {
                         )
                     )
             }
-            return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
@@ -154,7 +154,7 @@ class Phim247Provider : MainAPI() {
                 this.recommendations = recommendations
             }
         }
-    } return
+    }
 
     override suspend fun loadLinks(
         data: String,
