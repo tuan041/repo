@@ -122,7 +122,7 @@ class Phim247Provider : MainAPI() {
             val docEpisodes = app.get(url).document
             val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 val href = it.select("li").attr("data-url_web")
-                val name = Episodes.selectFirst("a")?.text()?.trim()
+                val name = it.selectFirst("a")?.text()?.trim()
                 Episode(
                     data = href,
                     name = name,
