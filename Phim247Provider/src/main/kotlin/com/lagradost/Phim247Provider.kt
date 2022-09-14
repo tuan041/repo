@@ -121,7 +121,7 @@ class Phim247Provider : MainAPI() {
         return if (tvType == TvType.TvSeries) {
             val episodes = app.get(url).document.select("ul.list-episodes.row > li").map {
                 Episode(
-                    fixUrl(it.attr("data-url_web").trim()) ?: return,
+                    fixUrl(it.attr("data-url_web").trim()) ?: return@map,
                     it.selectFirst("a")?.text()?.trim()
                 )
             }.reversed()
