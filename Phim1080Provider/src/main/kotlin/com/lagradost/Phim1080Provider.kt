@@ -72,8 +72,9 @@ class Phim1080Provider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title = document.selectFirst("h1.film-info-title")?.text()?.substringBefore("Tập")?.trim().toString()
-        val link = document.select("ul.list-button li:last-child a").attr("href")
+        val title = document.selectFirst("div.container")?.attr("data-name")?.text()?.substringBefore("Tập")?.trim().toString()
+        val dataslug = document.select("div.container").attr("data-slug")
+        val link = "$mainUrl/$dataslug"
         val poster = document.selectFirst("div.image img[itemprop=image]")?.attr("src")
         val tags = document.select("div.film-content div.film-info-genre:nth-child(8) a").map { it.text() }
         val year = document.select("div.film-content div.film-info-genre:nth-child(2)").text().substringAfter("Năm phát hành:").trim()
