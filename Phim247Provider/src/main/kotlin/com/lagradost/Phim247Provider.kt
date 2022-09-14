@@ -119,14 +119,14 @@ class Phim247Provider : MainAPI() {
         }
         
         return if (tvType == TvType.TvSeries) {
-            val episodes = app.get(url).document.select("ul.list-episodes.row > li").forEach {
+            val episodes = app.get(url).document.select("ul.list-episodes.row > li").map {
                 Episode(
-                    fixUrl(it.attr("data-url_web").trim()) ?: return@forEach,
+                    fixUrl(it.attr("data-url_web").trim()) ?: return,
                     it.selectFirst("a")?.text()?.trim()
                 )
-            }
+            }.reversed()
 
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes.reversed()) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
