@@ -1,7 +1,6 @@
 package com.lagradost
 
 import com.lagradost.cloudstream3.*
-import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
@@ -72,7 +71,7 @@ class Phim1080Provider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title = document.selectFirst("div.container")?.attr("data-name")?.text()?.substringBefore("Tập")?.trim().toString()
+        val title = document.selectFirst("div.container")?.attr("data-name")?.trim().toString()
         val dataslug = document.select("div.container").attr("data-slug")
         val link = "$mainUrl/$dataslug"
         val poster = document.selectFirst("div.image img[itemprop=image]")?.attr("src")
@@ -84,7 +83,6 @@ class Phim1080Provider : MainAPI() {
         val description = document.select("div.film-info-description").text().trim()
         val rating =
             document.select("div.film-content div.film-info-genre:nth-child(6)").text().substringAfter("Điểm IMDB:").substringBefore("/10").toRatingInt()
-        val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
         val recommendations = document.select("div.related-item").mapNotNull {
                 val main = it.select("div.related-item")
                 val recUrl = it.select("a").attr("href")
@@ -120,7 +118,6 @@ class Phim1080Provider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                addActors(actors)
                 this.recommendations = recommendations
             }
         } else {
@@ -130,7 +127,6 @@ class Phim1080Provider : MainAPI() {
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                addActors(actors)
                 this.recommendations = recommendations
             }
         }
