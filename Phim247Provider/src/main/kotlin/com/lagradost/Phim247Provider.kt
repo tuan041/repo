@@ -120,7 +120,7 @@ class Phim247Provider : MainAPI() {
         }
         val main = app.get(link).document
         val episodes = mutableListOf<Episode>()
-        main.select("ul.list-episodes.row > li")).forEach {
+        main.select("ul.list-episodes.row > li").forEach {
             entry ->
                 val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
                 val text = entry.text() ?: ""
