@@ -119,11 +119,10 @@ class Phim247Provider : MainAPI() {
         }
         
         return if (tvType == TvType.TvSeries) {
-            val docEpisodes = app.get(url).document
-            val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
+            val docEpisodes = app.get(url).document.select("ul.list-episodes.row > li").map {
                 Episode(
                 it.select("li").attr("data-url_web")
-                it.select("a").text().trim()
+                it.selectFirst("a")?.text()?.trim()
                 )
             }.reversed()
 
@@ -136,7 +135,6 @@ class Phim247Provider : MainAPI() {
                 addActors(actors)
                 this.recommendations = recommendations
             }
-            )
         } else {
             newMovieLoadResponse(title, url, TvType.Movie, link) {
                 this.posterUrl = poster
