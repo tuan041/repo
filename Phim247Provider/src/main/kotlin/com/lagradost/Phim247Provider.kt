@@ -118,22 +118,23 @@ class Phim247Provider : MainAPI() {
                     posterUrl,
                 )
         }
-        val main = app.get(link).document
-        val episodes = mutableListOf<Episode>()
-        main.select("ul.list-episodes.row > li").forEach {
-            entry ->
-                val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
-                val text = entry.text() ?: ""
-                val name = text.replace(Regex("(^(\\d+)\\.)"), "")
-                episodes.add(
-                    Episode(
-                        name = name,
-                        data = href
+
+        if (tvType == TvType.TvSeries) {
+            val main = app.get(link).document
+            val episodes = mutableListOf<Episode>()
+            main.select("ul.list-episodes.row > li").forEach {
+                entry ->
+                    val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
+                    val text = entry.text() ?: ""
+                    val name = text.replace(Regex("(^(\\d+)\\.)"), "")
+                    episodes.add(
+                        Episode(
+                            name = name,
+                            data = href
+                        )
                     )
-                )
-        }
-        return if (tvType == TvType.TvSeries) {
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+            }
+            return newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
