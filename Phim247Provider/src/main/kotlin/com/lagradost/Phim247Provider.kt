@@ -124,7 +124,7 @@ class Phim247Provider : MainAPI() {
                     fixUrl(it.attr("data-url_web").trim()),
                     "Tập " + it.selectFirst("a")?.text()?.trim()
                 )
-            } return
+            }
 
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
