@@ -117,18 +117,16 @@ class Phim247Provider : MainAPI() {
                     posterUrl,
                 )
         }
-        val episodes = ListOf<Episode>()
+        val episodes = mutableListOf<Episode>()
         document.select("ul.list-episodes.row > li").forEach {
             entry ->
-                val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
+                val href = entry.attr("data-url_web") ?: return@forEach
                 val text = entry.text() ?: ""
                 val name = text.replace(Regex("(^(\\d+)\\.)"), "")
-                val epNum = text.substring(1, text.indexOf(".")).toIntOrNull()
                 episodes.add(
                     Episode(
                         name = name,
-                        data = href,
-                        episode = epNum
+                        data = href
                     )
                 )
         }
