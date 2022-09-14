@@ -122,9 +122,9 @@ class Phim247Provider : MainAPI() {
             val episodes = app.get(url).document.select("ul.list-episodes.row > li").map {
                 Episode(
                     fixUrl(it.attr("data-url_web").trim()),
-                    "" + it.selectFirst("a")?.text()?.trim()
+                    "Tập " + it.selectFirst("a")?.text()?.trim()
                 )
-            }.reversed()
+            } return
 
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
