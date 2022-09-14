@@ -24,7 +24,7 @@ class Phim1080Provider : MainAPI() {
         "$mainUrl/phim-chieu-rap?page=" to "Phim Chiếu Rạp",
         "$mainUrl/phim-le?page=" to "Phim Lẻ",
         "$mainUrl/phim-bo?page=" to "Phim Bộ",
-
+        "$mainUrl/phim-sap-chieu?page=" to "Phim Sắp Chiếu",
     )
 
     override suspend fun getMainPage(
@@ -139,7 +139,7 @@ class Phim1080Provider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val document = app.get(data).document
-        val key = document.select(div.fimfast-player).attr("src")
+        val key = document.select(div#fimfast-player).attr("src")
 
         listOf(
             Pair("$key", "Phim1080")
