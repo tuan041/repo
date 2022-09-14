@@ -120,13 +120,12 @@ class Phim247Provider : MainAPI() {
         
         return if (tvType == TvType.TvSeries) {
             val docEpisodes = app.get(url).document
-            val episodes = docEpisodes.select("ul.list-episodes.row > li")
-                val href = it.select("li").attr("data-url_web")
-                val name = it.select("a").text().trim()
+            val episodes = docEpisodes.select("ul.list-episodes.row > li").map {
                 Episode(
-                    data = href,
-                    name = name,
+                it.select("li").attr("data-url_web")
+                it.select("a").text().trim()
                 )
+            }.reversed()
 
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
@@ -178,7 +177,6 @@ class Phim247Provider : MainAPI() {
                         source,
                         source,
                         link,
-                        subtitleCallback = Subtitle,
                         referer = "",
                         quality = Qualities.P1080.value,
                         isM3u8 = true,
