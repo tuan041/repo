@@ -117,7 +117,8 @@ class Phim247Provider : MainAPI() {
                     posterUrl,
                 )
         }
-        val episodes = document.select("ul.list-episodes.row > li").forEach {
+        val episodes = ListOf<Episode>()
+        document.select("ul.list-episodes.row > li").forEach {
             entry ->
                 val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
                 val text = entry.text() ?: ""
