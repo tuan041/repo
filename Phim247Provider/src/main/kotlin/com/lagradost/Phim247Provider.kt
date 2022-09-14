@@ -117,19 +117,19 @@ class Phim247Provider : MainAPI() {
                     posterUrl,
                 )
         }
-        val episodes = mutableListOf<Episode>()
-        document.select("ul.list-episodes.row").forEach {
-            it?.select("li")?.forEach { entry ->
-                val link = fixUrlNull(entry?.attr("data-url_web")) ?: return@forEach
-                val text = entry?.text() ?: ""
+        val episodes = document.select("ul.list-episodes.row > li").forEach {
+            entry ->
+                val href = fixUrlNull(entry.attr("data-url_web")) ?: return@forEach
+                val text = entry.text() ?: ""
                 val name = text.replace(Regex("(^(\\d+)\\.)"), "")
+                val epNum = text.substring(1, text.indexOf(".")).toIntOrNull()
                 episodes.add(
                     Episode(
                         name = name,
-                        data = link,
+                        data = href,
+                        episode = epNum
                     )
                 )
-            }
         }
         return if (tvType == TvType.TvSeries) {
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
