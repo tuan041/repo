@@ -154,7 +154,7 @@ class Phim247Provider : MainAPI() {
                 this.recommendations = recommendations
             }
         }
-    }
+    } return
 
     override suspend fun loadLinks(
         data: String,
