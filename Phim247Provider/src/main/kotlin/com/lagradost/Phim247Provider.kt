@@ -99,9 +99,7 @@ class Phim247Provider : MainAPI() {
             else document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").text().trim().takeLast(4).toIntOrNull()
         val tvType = if (document.select("div#myTabContent.tab-content").isNotEmpty()) TvType.TvSeries else TvType.Movie
         val description = document.select("div.detail > div.mt-2").text().trim().substringAfter("Play ")
-        val trailer =
-            document.select("body > script:nth-child(16)")?.data()?.substringAfter("var url_trailer = '")
-                ?.substringBefore("';")        
+        val trailer = document.select("body > script:nth-child(16)")?.substringAfter("var url_trailer = '")?.substringBefore("';")        
         val rating =
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:last-child").text().removePrefix("IMDB: ").toRatingInt()
         val actors = document.select("div.col-md-6.col-12:nth-child(2) > ul.more-info").mapNotNull { actor ->
@@ -122,7 +120,7 @@ class Phim247Provider : MainAPI() {
                 )
         }
         val episodes = mutableListOf<Episode>()
-        document.select("ul.list-episodes.row > li").map.forEach {
+        document.select("ul.list-episodes.row > li").mapforEach {
             entry ->
                 val href = entry.attr("data-url_web") ?: return@forEach
                 val text = entry.text() ?: ""
