@@ -21,8 +21,8 @@ class Phim1080Provider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/phim-de-cu" to "Phim đề cử",
-        "$mainUrl/him-chieu-rap?page=" to "Phim Chiếu Rạp",
+        "$mainUrl/phim-de-cu/" to "Phim đề cử",
+        "$mainUrl/phim-chieu-rap?page=" to "Phim Chiếu Rạp",
         "$mainUrl/phim-le?page=" to "Phim Lẻ",
         "$mainUrl/phim-bo?page=" to "Phim Bộ",
 
@@ -99,7 +99,7 @@ class Phim1080Provider : MainAPI() {
         }
 
         return if (tvType == TvType.TvSeries) {
-            val main = app.get(link).document
+            val main = app.get(url).document
             val episodes = arrayListOf<Episode>()
             main.select("div.episode-list > a").forEach {
                 entry ->
