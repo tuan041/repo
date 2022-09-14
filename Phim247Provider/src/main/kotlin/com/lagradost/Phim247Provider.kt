@@ -121,18 +121,17 @@ class Phim247Provider : MainAPI() {
         return if (tvType == TvType.TvSeries) {
             val episodes = app.get(url).document.select("ul.list-episodes.row > li").map {
                 Episode(
-                    fixUrl(it.attr("data-url_web").trim()) ?: return@map,
+                    fixUrl(it.attr("data-url_web").trim())
                     it.selectFirst("a")?.text()?.trim()
                 )
             }.reversed()
 
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
                 this.tags = tags
                 this.rating = rating
-                episodes(episodes)
                 addActors(actors)
                 this.recommendations = recommendations
             }
@@ -176,7 +175,7 @@ class Phim247Provider : MainAPI() {
                         source,
                         source,
                         link,
-                        referer = "",
+                        referer = "$mainUrl/",
                         quality = Qualities.P1080.value,
                         isM3u8 = true,
                     )
