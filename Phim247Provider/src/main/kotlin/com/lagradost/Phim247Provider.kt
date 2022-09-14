@@ -126,7 +126,7 @@ class Phim247Provider : MainAPI() {
                 )
             }
 
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes.reversed()) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
