@@ -2,7 +2,6 @@ package com.lagradost
 
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
-import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
@@ -73,25 +72,22 @@ class Phim1080Provider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title = document.selectFirst("h1.film-info-title")?.text()?.trim().toString()
+        val title = document.selectFirst("h1.film-info-title")?.text()?.substringBefore("Tập")?.trim().toString()
         val link = document.select("ul.list-button li:last-child a").attr("href")
         val poster = document.selectFirst("div.image img[itemprop=image]")?.attr("src")
         val tags = document.select("div.film-content div.film-info-genre:nth-child(8) a").map { it.text() }
         val year = document.select("div.film-content div.film-info-genre:nth-child(2)").text().substringAfter("Năm phát hành:").trim()
             .toIntOrNull()
-        val tvType = if (document.select("div.latest-episode").isNotEmpty()
+        val tvType = if (document.select("div.episode-list-header").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.film-info-description").text().trim()
-        val trailer =
-            document.select("div#trailer script").last()?.data()?.substringAfter("file: \"")
-                ?.substringBefore("\",")
         val rating =
             document.select("div.film-content div.film-info-genre:nth-child(6)").text().substringAfter("Điểm IMDB:").substringBefore("/10").toRatingInt()
         val actors = document.select("ul.entry-meta.block-film li:last-child a").map { it.text() }
         val recommendations = document.select("div.related-item").mapNotNull {
                 val main = it.select("div.related-item")
                 val recUrl = it.select("a").attr("href")
-                val recTitle = it.select("related-item-meta > a").text()
+                val recTitle = it.select("div.related-item-meta > a").text()
                 val posterUrl = main.select("img.related-item-thumbnail").attr("data-src")
                 MovieSearchResponse(
                     recTitle,
@@ -105,9 +101,9 @@ class Phim1080Provider : MainAPI() {
         return if (tvType == TvType.TvSeries) {
             val main = app.get(link).document
             val episodes = arrayListOf<Episode>()
-            main.select("ul.list-episodes.row > li").forEach {
+            main.select("div.episode-list > a").forEach {
                 entry ->
-                    val href = String(Base64.getUrlDecoder().decode(entry.attr("data-url_cdn"))) ?: return@forEach
+                    val href = entry.attr("data-url_cdn") ?: return@forEach
                     val text = entry.text() ?: ""
                     val name = text.replace(Regex("(^(\\d+)\\.)"), "")
                     episodes.add(
