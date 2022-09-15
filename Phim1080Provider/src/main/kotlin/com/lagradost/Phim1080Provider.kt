@@ -21,8 +21,7 @@ class PhimnhuaProvider : MainAPI() {
 
     override val mainPage = mainPageOf(
         "$mainUrl/topweek/page/" to "Top Phim",
-        "Phim Hot" to "div.owl-carousel.home__carousel.home__carousel--default.owl-loaded",
-
+        "$mainUrl/page/" to "Phim Mới",
     )
 
     override suspend fun getMainPage(
@@ -30,7 +29,7 @@ class PhimnhuaProvider : MainAPI() {
         request: MainPageRequest
     ): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home = document.select("div.card__cover").mapNotNull {
+        val home = document.select("div.col-6.col-sm-4.col-md-3.col-xl-2 > div.card > div.card__cover").mapNotNull {
             it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
