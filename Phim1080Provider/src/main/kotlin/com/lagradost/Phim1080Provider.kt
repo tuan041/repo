@@ -71,26 +71,17 @@ class PhimnhuaProvider : MainAPI() {
         val title = document.selectFirst("div.container > div.row > div:nth-child(1) > h1")?.text()?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
         val link = document.select("div.container").attr("data-slug")
         val poster = document.selectFirst("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > img")?.attr("src")
-        val tags = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content :nth-child(8) a").map { it.text() }
-        val year = document.select("div.film-content div.film-info-genre:nth-child(2)").text().substringAfter("Năm phát hành:").trim()
+        val tags = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(3) > a").map { it.text() }
+        val year = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(4)").text().substringAfter("Năm phát hành:").trim()
             .toIntOrNull()
-        val tvType = if (document.select("div.episode-list-header").isNotEmpty()
+        val tvType = if (document.select("ul.list.list-inline.justify-content-center").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div.film-info-description").text().trim()
+        val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(7) > p").text().trim()
         val rating =
-            document.select("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > span").text().substringAfter("Điểm IMDB:").substringBefore("/10").toRatingInt()
-        val recommendations = document.select("div.related-item").mapNotNull {
-                val main = it.select("div.related-item")
-                val recUrl = it.select("a").attr("href")
-                val recTitle = it.select("div.related-item-meta > a").text()
-                val posterUrl = main.select("img.related-item-thumbnail").attr("data-src")
-                MovieSearchResponse(
-                    recTitle,
-                    recUrl,
-                    this.name,
-                    TvType.Movie,
-                    posterUrl,
-                )
+            document.select("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > span").text().trim().toRatingInt()
+        val actors = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(2) > a").map { it.text() }
+        val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
+            it.toSearchResult()
         }
 
         return if (tvType == TvType.TvSeries) {
