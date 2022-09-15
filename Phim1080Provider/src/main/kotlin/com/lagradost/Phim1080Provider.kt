@@ -8,7 +8,7 @@ import java.util.Base64
 
 class PhimnhuaProvider : MainAPI() {
     override var mainUrl = "https://phimnhua.com"
-    override var name = "Phim1080"
+    override var name = "Phim Nhựa"
     override val hasMainPage = true
     override var lang = "vi"
     override val hasDownloadSupport = true
@@ -36,7 +36,7 @@ class PhimnhuaProvider : MainAPI() {
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = this.selectFirst("a > img")?.attr("alt")?.substringAfter("Xem phim")?.trim().toString()
+        val title = this.selectFirst("a > img")?.attr("alt")?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("a > img")?.attr("src")
         val temp = this.select("span.tray-item-quality").text()
@@ -57,10 +57,10 @@ class PhimnhuaProvider : MainAPI() {
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
-        val link = "$mainUrl/tim-kiem/$query"
+        val link = "$mainUrl/?s=$query"
         val document = app.get(link).document
 
-        return document.select("div.tray-item > a").mapNotNull {
+        return document.select("div.col-6.col-sm-4.col-md-3.col-xl-2 > div.card > div.card__cover").mapNotNull {
             it.toSearchResult()
         }
     }
@@ -68,10 +68,9 @@ class PhimnhuaProvider : MainAPI() {
     override suspend fun load(url: String): LoadResponse {
         val document = app.get(url).document
 
-        val title = document.selectFirst("div.container")?.attr("data-name")?.trim().toString()
-        val dataslug = document.select("div.container").attr("data-slug")
-        val link = "$mainUrl/$dataslug"
-        val poster = document.selectFirst("div.image img[itemprop=image]")?.attr("src")
+        val title = document.selectFirst("div.container > div.row > div:nth-child(1) > h1")?.text()?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
+        val link = document.select("div.container").attr("data-slug")
+        val poster = document.selectFirst("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > img")?.attr("src")
         val tags = document.select("div.film-content div.film-info-genre:nth-child(8) a").map { it.text() }
         val year = document.select("div.film-content div.film-info-genre:nth-child(2)").text().substringAfter("Năm phát hành:").trim()
             .toIntOrNull()
