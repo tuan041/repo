@@ -138,11 +138,22 @@ class PhimnhuaProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val doc = app.get(data).document
-        val iframe = doc.select("div.player-warp > source").map { fixUrl(it.attr("src")) }
+        val link = doc.select("div.player-warp > source").map { fixUrl(it.attr("src")) }
         listOf(
-            Pair("$iframe", "Phimnhua")
-        ).apmap {
-            loadExtractor(iframe, data, subtitleCallback, callback)
+            Pair("$link", "Phimnhua")
+        ).apmap { (link, source) ->
+            safeApiCall {
+                callback.invoke(
+                    ExtractorLink(
+                        source,
+                        source,
+                        link,
+                        referer = "$mainUrl/",
+                        quality = Qualities.P1080.value,
+                        isM3u8 = true,
+                    )
+                )
+            }
         }
         return true
     }
