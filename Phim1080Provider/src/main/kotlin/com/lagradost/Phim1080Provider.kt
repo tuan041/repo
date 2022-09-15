@@ -4,8 +4,9 @@ import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
+import com.lagradost.cloudstream3.utils.ExtractorLink
+import com.lagradost.cloudstream3.utils.loadExtractor
 import org.jsoup.nodes.Element
-import java.util.Base64
 
 class PhimnhuaProvider : MainAPI() {
     override var mainUrl = "https://phimnhua.com"
@@ -70,7 +71,6 @@ class PhimnhuaProvider : MainAPI() {
         val document = app.get(url).document
 
         val title = document.selectFirst("div.container > div.row > div:nth-child(1) > h1")?.text()?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
-        val link = document.select("div.container").attr("data-slug")
         val poster = document.selectFirst("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > img")?.attr("src")
         var year: Int? = null
         var tags: List<String>? = null
@@ -120,7 +120,7 @@ class PhimnhuaProvider : MainAPI() {
                 this.recommendations = recommendations
             }
         } else {
-            newMovieLoadResponse(title, url, TvType.Movie, link) {
+            newMovieLoadResponse(title, url, TvType.Movie, fixUrl(url)) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
@@ -137,40 +137,11 @@ class PhimnhuaProvider : MainAPI() {
         subtitleCallback: (SubtitleFile) -> Unit,
         callback: (ExtractorLink) -> Unit
     ): Boolean {
-        val document = app.get(data).document
-        val key = document.select("div#content script")
-            .find { it.data().contains("filmInfo.episodeID =") }?.data()?.let { script ->
-                val id = script.substringAfter("filmInfo.episodeID = parseInt('")
-                app.post(
-                    // Not mainUrl
-                    url = "https://phimmoichills.net/pmplayer.php",
-                    data = mapOf("qcao" to id, "sv" to "0"),
-                    referer = data,
-                    headers = mapOf(
-                        "X-Requested-With" to "XMLHttpRequest",
-                        "Content-Type" to "application/x-www-form-urlencoded; charset=UTF-8"
-                    )
-                ).text.substringAfterLast("iniPlayers(\"")
-                    .substringBefore("\",")
-            }
-            
-        listOf(
-            Pair("$key", "Phim1080")
-        ).apmap { (link, source) ->
-            safeApiCall {
-                callback.invoke(
-                    ExtractorLink(
-                        source,
-                        source,
-                        link,
-                        referer = "$mainUrl/",
-                        quality = Qualities.P1080.value,
-                        isM3u8 = true,
-                    )
-                )
-            }
+        val doc = app.get(data).document
+        val iframe = doc.select("div.player-warp > source").map { fixUrl(it.attr("src")) }
+        iframe.apmap {
+            loadExtractor(iframe, data, callback)
         }
         return true
     }
-
 }
