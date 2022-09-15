@@ -71,14 +71,14 @@ class PhimnhuaProvider : MainAPI() {
         val title = document.selectFirst("div.container > div.row > div:nth-child(1) > h1")?.text()?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
         val link = document.select("div.container").attr("data-slug")
         val poster = document.selectFirst("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > img")?.attr("src")
-        val tags = document.select("div.film-content div.film-info-genre:nth-child(8) a").map { it.text() }
+        val tags = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content :nth-child(8) a").map { it.text() }
         val year = document.select("div.film-content div.film-info-genre:nth-child(2)").text().substringAfter("Năm phát hành:").trim()
             .toIntOrNull()
         val tvType = if (document.select("div.episode-list-header").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.film-info-description").text().trim()
         val rating =
-            document.select("div.film-content div.film-info-genre:nth-child(6)").text().substringAfter("Điểm IMDB:").substringBefore("/10").toRatingInt()
+            document.select("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > span").text().substringAfter("Điểm IMDB:").substringBefore("/10").toRatingInt()
         val recommendations = document.select("div.related-item").mapNotNull {
                 val main = it.select("div.related-item")
                 val recUrl = it.select("a").attr("href")
