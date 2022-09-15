@@ -139,8 +139,10 @@ class PhimnhuaProvider : MainAPI() {
     ): Boolean {
         val doc = app.get(data).document
         val iframe = doc.select("div.player-warp > source").map { fixUrl(it.attr("src")) }
-        iframe.apmap {
-            loadExtractor(iframe, data, callback)
+        listOf(
+            Pair("$iframe", "Phimnhua")
+        ).apmap {
+            loadExtractor(iframe, data, subtitleCallback, callback)
         }
         return true
     }
