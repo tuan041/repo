@@ -75,7 +75,7 @@ class PhimnhuaProvider : MainAPI() {
         val tags = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(3) > a").map { it.text() }
         val year = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(4)").text().substringAfter("Năm phát hành:").trim()
             .toIntOrNull()
-        val tvType = if (document.select("div.d-flex.justify-content-center.mt-3 > ul.list.list-inline.justify-content-center").isNotEmpty()
+        val tvType = if (document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(7) > div > p").text().trim()
         val actors = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(2) > a").map { it.text() }
