@@ -6,8 +6,8 @@ import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
 import java.util.Base64
 
-class Phim1080Provider : MainAPI() {
-    override var mainUrl = "https://xemphim1080.com"
+class PhimnhuaProvider : MainAPI() {
+    override var mainUrl = "https://phimnhua.com"
     override var name = "Phim1080"
     override val hasMainPage = true
     override var lang = "vi"
@@ -20,11 +20,7 @@ class Phim1080Provider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/phim-de-cu/" to "Phim đề cử",
-        "$mainUrl/phim-chieu-rap?page=" to "Phim Chiếu Rạp",
-        "$mainUrl/phim-le?page=" to "Phim Lẻ",
-        "$mainUrl/phim-bo?page=" to "Phim Bộ",
-        "$mainUrl/phim-sap-chieu?page=" to "Phim Sắp Chiếu",
+        "$mainUrl/topweek/page/" to "Top Phim",
     )
 
     override suspend fun getMainPage(
@@ -32,31 +28,16 @@ class Phim1080Provider : MainAPI() {
         request: MainPageRequest
     ): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home = document.select("div.tray-item > a").mapNotNull {
+        val home = document.select("div.col-6.col-sm-4.col-md-3.col-xl-2 > div.card").mapNotNull {
             it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = this.selectFirst("div.tray-item-title")?.text()?.trim().toString()
+        val title = this.selectFirst("card__content > h3")?.text()?.substringBefore(" – ")?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("img.tray-item-thumbnail")?.attr("data-src")
-        val temp = this.select("span.tray-item-quality").text()
-        return if (temp.contains(Regex("\\d"))) {
-            val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
-            newAnimeSearchResponse(title, href, TvType.TvSeries) {
-                this.posterUrl = posterUrl
-                addSub(episode)
-            }
-        } else {
-            val quality =
-                temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
-            newMovieSearchResponse(title, href, TvType.Movie) {
-                this.posterUrl = posterUrl
-                addQuality(quality)
-            }
-        }
+        val posterUrl = this.selectFirst("a > img")?.attr("src")
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
