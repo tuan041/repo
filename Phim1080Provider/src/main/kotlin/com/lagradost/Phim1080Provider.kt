@@ -21,6 +21,8 @@ class PhimnhuaProvider : MainAPI() {
 
     override val mainPage = mainPageOf(
         "$mainUrl/topweek/page/" to "Top Phim",
+        "Phim Hot" to "div.owl-carousel.home__carousel.home__carousel--default.owl-loaded",
+
     )
 
     override suspend fun getMainPage(
@@ -28,14 +30,14 @@ class PhimnhuaProvider : MainAPI() {
         request: MainPageRequest
     ): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home = document.select("div.col-6.col-sm-4.col-md-3.col-xl-2 > div.card").mapNotNull {
+        val home = document.select("div.card__cover").mapNotNull {
             it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = this.selectFirst("card__content > h3")?.text()?.substringBefore(" – ")?.trim().toString()
+        val title = this.selectFirst("a > img")?.attr("alt")?.substringAfter("Xem phim")?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("a > img")?.attr("src")
         val temp = this.select("span.tray-item-quality").text()
