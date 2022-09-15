@@ -150,7 +150,7 @@ class PhimnhuaProvider : MainAPI() {
                         link,
                         referer = "$mainUrl/",
                         quality = Qualities.P1080.value,
-                        isM3u8 = true,
+                        isM3u8 = false,
                     )
                 )
             }
