@@ -38,6 +38,21 @@ class PhimnhuaProvider : MainAPI() {
         val title = this.selectFirst("card__content > h3")?.text()?.substringBefore(" – ")?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = this.selectFirst("a > img")?.attr("src")
+        val temp = this.select("span.tray-item-quality").text()
+        return if (temp.contains(Regex("\\d"))) {
+            val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
+            newAnimeSearchResponse(title, href, TvType.TvSeries) {
+                this.posterUrl = posterUrl
+                addSub(episode)
+            }
+        } else {
+            val quality =
+                temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
+            newMovieSearchResponse(title, href, TvType.Movie) {
+                this.posterUrl = posterUrl
+                addQuality(quality)
+            }
+        }
     }
 
     override suspend fun search(query: String): List<SearchResponse> {
