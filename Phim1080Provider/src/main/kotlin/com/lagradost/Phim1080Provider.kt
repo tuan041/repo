@@ -82,10 +82,10 @@ class PhimnhuaProvider : MainAPI() {
                     year = element.ownText().substringAfter("Năm phát hành:").trim().toIntOrNull()
                 }
                 type.contains("Tags") -> {
-                    tags = element.select("a").mapNotNull { it.text() }
+                    actors = element.select("a").mapNotNull { it.text() }
                 }
                 type.contains("Thể loại") -> {
-                    actors = element.select("a").mapNotNull { it.text() }
+                    tags = element.select("a").mapNotNull { it.text() }
                 }
             }
         }
