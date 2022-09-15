@@ -72,13 +72,23 @@ class PhimnhuaProvider : MainAPI() {
         val title = document.selectFirst("div.container > div.row > div:nth-child(1) > h1")?.text()?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
         val link = document.select("div.container").attr("data-slug")
         val poster = document.selectFirst("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > img")?.attr("src")
-        val tags = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(3) > a").map { it.text() }
-        val year = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(4)").text().substringAfter("Năm phát hành:").trim()
-            .toIntOrNull()
+        document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li").forEach { element ->
+            val type = element?.select("span")?.text() ?: return@forEach
+            when {
+                type.contains("Năm phát hành") -> {
+                    year = element.ownText().substringAfter("Năm phát hành:").trim().toIntOrNull()
+                }
+                type.contains("Tags") -> {
+                    tags = element.select("a").mapNotNull { it.text() }
+                }
+                type.contains("Thể loại") -> {
+                    actors = element.select("a").mapNotNull { it.text() }
+                }
+            }
+        }
         val tvType = if (document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
-        val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(7) > div > p").text().trim()
-        val actors = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(2) > a").map { it.text() }
+        val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:last-child > div > p").text().trim()
         val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
             it.toSearchResult()
         }
