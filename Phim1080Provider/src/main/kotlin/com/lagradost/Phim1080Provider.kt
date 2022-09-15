@@ -1,6 +1,7 @@
 package com.lagradost
 
 import com.lagradost.cloudstream3.*
+import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.mvvm.safeApiCall
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
@@ -77,8 +78,6 @@ class PhimnhuaProvider : MainAPI() {
         val tvType = if (document.select("div.d-flex.justify-content-center.mt-3 > ul.list.list-inline.justify-content-center").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(7) > div > p").text().trim()
-        val rating =
-            document.select("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > span").text().trim().toRatingInt()
         val actors = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:nth-child(2) > a").map { it.text() }
         val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
             it.toSearchResult()
@@ -104,7 +103,6 @@ class PhimnhuaProvider : MainAPI() {
                 this.year = year
                 this.plot = description
                 this.tags = tags
-                this.rating = rating
                 addActors(actors)
                 this.recommendations = recommendations
             }
@@ -114,7 +112,6 @@ class PhimnhuaProvider : MainAPI() {
                 this.year = year
                 this.plot = description
                 this.tags = tags
-                this.rating = rating
                 addActors(actors)
                 this.recommendations = recommendations
             }
