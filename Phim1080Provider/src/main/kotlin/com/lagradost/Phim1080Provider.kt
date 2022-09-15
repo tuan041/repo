@@ -72,6 +72,9 @@ class PhimnhuaProvider : MainAPI() {
         val title = document.selectFirst("div.container > div.row > div:nth-child(1) > h1")?.text()?.substringAfter("Xem phim")?.substringBefore(" – ")?.trim().toString()
         val link = document.select("div.container").attr("data-slug")
         val poster = document.selectFirst("div.col-12.col-sm-6.col-md-4.col-lg-3.col-xl-5 > div.card__cover > img")?.attr("src")
+        var year: Int? = null
+        var tags: List<String>? = null
+        var actors: List<String>? = null
         document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li").forEach { element ->
             val type = element?.select("span")?.text() ?: return@forEach
             when {
