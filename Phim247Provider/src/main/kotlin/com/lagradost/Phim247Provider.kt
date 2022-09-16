@@ -123,7 +123,7 @@ class Phim247Provider : MainAPI() {
             val episodes = arrayListOf<Episode>()
             main.select("ul.list-episodes.row > li").forEach {
                 entry ->
-                    val href = entry.attr("data-url_cdn") ?: return@forEach
+                    val href = entry.attr("data-url_web") ?: return@forEach
                     val text = entry.text() ?: ""
                     val name = text.replace(Regex("(^(\\d+)\\.)"), "")
                     episodes.add(
