@@ -92,25 +92,17 @@ class PhimnhuaProvider : MainAPI() {
         val tvType = if (document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:last-child > div > p").text().trim()
+        val episodes = doc.select("ul.list.list-inline.justify-content-center > li.list-inline-item > form").map {
+            val name = it.selectFirst("button")?.text()
+            val link = mainUrl + it.selectFirst("button")?.attr("data-url")
+            Episode(link, name)
+        }.reversed()
+        
         val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
             it.toSearchResult()
         }
 
         return if (tvType == TvType.TvSeries) {
-            val main = app.get(url).document
-            val episodes = arrayListOf<Episode>()
-            main.select("div.episode-list > a").forEach {
-                entry ->
-                    val href = entry.attr("data-url_cdn") ?: return@forEach
-                    val text = entry.text() ?: ""
-                    val name = text.replace(Regex("(^(\\d+)\\.)"), "")
-                    episodes.add(
-                        Episode(
-                            name = name,
-                            data = href
-                        )
-                    )
-            }
             newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
@@ -138,7 +130,7 @@ class PhimnhuaProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val doc = app.get(data).document
-        val key = doc.select("div.player-warp > div > div > video > source").map { fixUrl(it.attr("src")) }
+        val key = doc.select("div.player-warp > div > div > video > source").attr("src")
         listOf(
             Pair("$key", "Phimnhua")
         ).apmap { (link, source) ->
@@ -149,8 +141,7 @@ class PhimnhuaProvider : MainAPI() {
                         source,
                         link,
                         referer = "",
-                        quality = Qualities.P1080.value,
-                        isM3u8 = true,
+                        quality = Qualities.P1080.value
                     )
                 )
             }
