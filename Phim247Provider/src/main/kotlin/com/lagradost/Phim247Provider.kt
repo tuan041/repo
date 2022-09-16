@@ -1,15 +1,17 @@
 package com.lagradost
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import com.lagradost.cloudstream3.mvvm.safeApiCall
+import com.lagradost.cloudstream3.network.CloudflareKiller
 import com.lagradost.cloudstream3.utils.*
 import org.jsoup.nodes.Element
 import java.util.Base64
 
 class Phim247Provider : MainAPI() {
-    override var mainUrl = "https://247phim.com"
+    override var mainUrl = "https://xemphim.club"
     override var name = "247Phim"
     override val hasMainPage = true
     override var lang = "vi"
@@ -22,31 +24,29 @@ class Phim247Provider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/phim/khong-the-bo-lo/trang-" to "Không Thể Bỏ Lỡ",
-        "$mainUrl/phim/phim-chieu-rap/trang-" to "Phim Chiếu Rạp",
-        "$mainUrl/phim/phim-le/trang-" to "Phim Lẻ",
-        "$mainUrl/phim/phim-bo/trang-" to "Phim Bộ",
-        "$mainUrl/phim/hoat-hinh/trang-" to "Phim hoạt hình",
-        "$mainUrl/phim/sieu-anh-hung/trang-" to "Phim siêu anh hùng",
+        "$mainUrl/type/movie?page=" to "Phim Lẻ",
+        "$mainUrl/type/show?page=" to "Phim Bộ",
+        "$mainUrl/browse?page=" to "Phim Mới",
 
     )
+    
+    private val interceptor = CloudflareKiller()
 
     override suspend fun getMainPage(
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
         val document = app.get(request.data + page).document
-        val home = document.select("div.item.col-lg-2.col-md-3.col-sm-4.col-6").mapNotNull {
+        val home = document.select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet is-half-mobile").mapNotNull {
             it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
     }
 
     private fun Element.toSearchResult(): SearchResponse {
-        val title = if (this.selectFirst("h3")?.text()?.trim().toString().isNotEmpty())
-            this.selectFirst("h3")?.text()?.trim().toString() else this.selectFirst("p.subtitle")?.text()?.trim().toString()
+        val title = this.selectFirst("h3.name.vi > a")?.text()?.trim().toString()
         val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("div.img-4-6 > div.inline > img")?.attr("src")
+        val posterUrl = this.selectFirst("a > img")?.attr("src")
         val temp = this.select("span.ribbon").text()
         return if (temp.contains(Regex("\\d"))) {
             val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
@@ -63,7 +63,7 @@ class Phim247Provider : MainAPI() {
             }
         }
     }
-
+    
     override suspend fun search(query: String): List<SearchResponse> {
         val link = "$mainUrl/tim-kiem-phim/?keyword=$query"
         val document = app.get(link).document
