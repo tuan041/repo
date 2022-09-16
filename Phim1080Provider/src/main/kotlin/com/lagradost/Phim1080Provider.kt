@@ -95,7 +95,9 @@ class PhimnhuaProvider : MainAPI() {
         val episodes = document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").map {
             val name = it.selectFirst("button")?.text()
             val link = it.selectFirst("button")?.attr("data-url")
-            Episode(link, name)
+            episodes.add(
+                Episode(link, name)
+            )
         }.reversed()
         
         val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
@@ -103,13 +105,12 @@ class PhimnhuaProvider : MainAPI() {
         }
 
         return if (tvType == TvType.TvSeries) {
-            newTvSeriesLoadResponse(title, url, TvType.TvSeries) {
+            newTvSeriesLoadResponse(title, url, TvType.TvSeries, episodes) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
                 this.tags = tags
                 addActors(actors)
-                addEpisodes(episodes)
                 this.recommendations = recommendations
             }
         } else {
