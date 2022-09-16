@@ -92,10 +92,13 @@ class PhimnhuaProvider : MainAPI() {
         val tvType = if (document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").isNotEmpty()
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:last-child > div > p").text().trim()
-        val episodes = document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").map {
+        val episodes = arrayListOf<Episode>()
+        document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").map {
             val name = it.selectFirst("button")?.text()
             val link = it.selectFirst("button")?.attr("data-url")
-            Episode(link, name).toString()
+            episodes.add(
+                Episode(link, name).toString()
+            )
         }.reversed()
         
         val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
