@@ -36,34 +36,24 @@ class Phim247Provider : MainAPI() {
         page: Int,
         request: MainPageRequest
     ): HomePageResponse {
-        val document = app.get(request.data + page).document
+        val document = app.get(request.data + page,  interceptor = interceptor).document
         val home = document.select("div.column.is-one-fifth-fullhd.is-one-quarter-desktop.is-one-third-tablet is-half-mobile").mapNotNull {
             it.toSearchResult()
         }
         return newHomePageResponse(request.name, home)
     }
 
-    private fun Element.toSearchResult(): SearchResponse {
-        val title = this.selectFirst("h3.name.vi > a")?.text()?.trim().toString()
-        val href = fixUrl(this.selectFirst("a")!!.attr("href"))
-        val posterUrl = this.selectFirst("a > img")?.attr("src")
-        val temp = this.select("span.ribbon").text()
-        return if (temp.contains(Regex("\\d"))) {
-            val episode = Regex("\\d+").find(temp)?.groupValues?.distinct()?.firstOrNull()?.toIntOrNull()
-            newAnimeSearchResponse(title, href, TvType.TvSeries) {
-                this.posterUrl = posterUrl
-                addSub(episode)
-            }
-        } else {
-            val quality =
-                temp.replace(Regex("(-.*)|(\\|.*)|(?i)(VietSub.*)|(?i)(Thuyết.*)"), "").trim()
-            newMovieSearchResponse(title, href, TvType.Movie) {
-                this.posterUrl = posterUrl
-                addQuality(quality)
-            }
+    private fun Element.toSearchResult(): SearchResponse? {
+        val title = this.selectFirst("h3.name.vi > a")?.text() ?: return null
+        val href = fixUrl(this.selectFirst("a")!!.attr("href")))
+        val posterUrl = fixUrlNull(this.select("a > img").attr("src"))
+        return newMovieSearchResponse(title, href, TvType.Movie) {
+            this.posterUrl = posterUrl
+            this.quality = quality
+            posterHeaders = interceptor.getCookieHeaders(url).toMap()
         }
+
     }
-    
     override suspend fun search(query: String): List<SearchResponse> {
         val link = "$mainUrl/tim-kiem-phim/?keyword=$query"
         val document = app.get(link).document
