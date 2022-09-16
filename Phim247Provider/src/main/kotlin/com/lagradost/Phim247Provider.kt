@@ -45,7 +45,7 @@ class Phim247Provider : MainAPI() {
 
     private fun Element.toSearchResult(): SearchResponse? {
         val title = this.selectFirst("h3.name.vi > a")?.text() ?: return null
-        val href = fixUrl(this.selectFirst("a")!!.attr("href")))
+        val href = fixUrl(this.selectFirst("a")!!.attr("href"))
         val posterUrl = fixUrlNull(this.select("a > img").attr("src"))
         return newMovieSearchResponse(title, href, TvType.Movie) {
             this.posterUrl = posterUrl
