@@ -95,9 +95,9 @@ class PhimnhuaProvider : MainAPI() {
         val episodes = arrayListOf<Episode>()
         document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").map {
             val name = it.selectFirst("button")?.text()
-            val link = it.selectFirst("button")?.attr("data-url")
+            val link = it.selectFirst("button")?.attr("data-url").toString()
             episodes.add(
-                Episode(link, name).toString()
+                Episode(link, name)
             )
         }.reversed()
         
