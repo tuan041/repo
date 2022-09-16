@@ -24,7 +24,7 @@ class Phim247Provider : MainAPI() {
     )
 
     override val mainPage = mainPageOf(
-        "$mainUrl/type/movie?page=" to "Phim Lẻ",
+        "$mainUrl/type/movie/" to "Phim Lẻ",
         "$mainUrl/type/show?page=" to "Phim Bộ",
         "$mainUrl/browse?page=" to "Phim Mới",
 
