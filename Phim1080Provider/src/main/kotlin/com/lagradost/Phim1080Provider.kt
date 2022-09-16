@@ -138,7 +138,7 @@ class PhimnhuaProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val doc = app.get(data).document
-        val link = doc.select("div.player-warp > source").map { fixUrl(it.attr("src")) }
+        val link = doc.select("div.player-warp > div > div > video > source").map { fixUrl(it.attr("src")) }
         listOf(
             Pair("$link", "Phimnhua")
         ).apmap { (link, source) ->
