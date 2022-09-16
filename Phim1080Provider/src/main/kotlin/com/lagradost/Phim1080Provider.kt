@@ -95,9 +95,7 @@ class PhimnhuaProvider : MainAPI() {
         val episodes = document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").map {
             val name = it.selectFirst("button")?.text()
             val link = it.selectFirst("button")?.attr("data-url")
-            episodes.add(
-                Episode(link, name)
-            )
+            Episode(link, name).toString()
         }.reversed()
         
         val recommendations = document.select("div.col-6.col-lg-2 > div.card.card--normal > div.card__cover").map {
