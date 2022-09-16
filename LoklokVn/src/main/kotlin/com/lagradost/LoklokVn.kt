@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 class LoklokVn : MainAPI() {
     override var name = "LoklokVn"
     override val hasMainPage = true
+    override var lang = "vi"
     override val hasChromecastSupport = true
     override val instantLinkLoading = true
     override val supportedTypes = setOf(
