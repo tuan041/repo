@@ -89,7 +89,6 @@ class Phim247Provider : MainAPI() {
 
         val title = if (document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString().isNotEmpty())
             document.selectFirst("h2.title-vod.mt-2")?.text()?.trim().toString() else document.selectFirst("h3.title-vod.mt-2")?.text()?.trim().toString()
-        val link = document.select("head > link:nth-child(4)").attr("href")
         val poster = document.selectFirst("div.item > div.img-4-6 > div.inline > img")?.attr("src")
         val tags = if (document.select("div#myTabContent.tab-content").isNotEmpty())
             document.select("div.col-md-6.col-12:nth-child(1) > ul.more-info > li:nth-child(5)").map { it.text().substringAfter(": ").substringBefore(", Phim").trim() }
@@ -124,7 +123,7 @@ class Phim247Provider : MainAPI() {
             val episodes = arrayListOf<Episode>()
             main.select("ul.list-episodes.row > li").forEach {
                 entry ->
-                    val href = String(Base64.getUrlDecoder().decode(entry.attr("data-url_cdn"))) ?: return@forEach
+                    val href = entry.attr("data-url_cdn") ?: return@forEach
                     val text = entry.text() ?: ""
                     val name = text.replace(Regex("(^(\\d+)\\.)"), "")
                     episodes.add(
@@ -144,7 +143,7 @@ class Phim247Provider : MainAPI() {
                 this.recommendations = recommendations
             }
         } else {
-            newMovieLoadResponse(title, url, TvType.Movie, link) {
+            newMovieLoadResponse(title, url, TvType.Movie, fixUrl(url)) {
                 this.posterUrl = poster
                 this.year = year
                 this.plot = description
@@ -183,7 +182,7 @@ class Phim247Provider : MainAPI() {
                         source,
                         source,
                         link,
-                        referer = "$mainUrl/",
+                        referer = "",
                         quality = Qualities.P1080.value,
                         isM3u8 = true,
                     )
