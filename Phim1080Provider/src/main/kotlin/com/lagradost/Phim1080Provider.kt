@@ -93,8 +93,8 @@ class PhimnhuaProvider : MainAPI() {
         ) TvType.TvSeries else TvType.Movie
         val description = document.select("div.col-sm-6.col-md-8.col-lg-9.col-xl-7 > div.card__content > ul.card__meta > li:last-child > div > p").text().trim()
         val episodes = document.select("ul.list.list-inline.justify-content-center > li.list-inline-item").map {
-            val name = it.selectFirst("button")?.text()
-            val link = it.selectFirst("button")?.attr("data-url")
+            val name = it.selectFirst("button").text()
+            val link = it.selectFirst("button").attr("data-url")
             Episode(link, name)
         }.reversed()
         
