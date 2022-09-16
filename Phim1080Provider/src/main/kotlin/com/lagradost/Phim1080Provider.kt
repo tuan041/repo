@@ -138,9 +138,9 @@ class PhimnhuaProvider : MainAPI() {
         callback: (ExtractorLink) -> Unit
     ): Boolean {
         val doc = app.get(data).document
-        val link = doc.select("div.player-warp > div > div > video > source").map { fixUrl(it.attr("src")) }
+        val key = doc.select("div.player-warp > div > div > video > source").map { fixUrl(it.attr("src")) }
         listOf(
-            Pair("$link", "Phimnhua")
+            Pair("$key", "Phimnhua")
         ).apmap { (link, source) ->
             safeApiCall {
                 callback.invoke(
@@ -148,9 +148,9 @@ class PhimnhuaProvider : MainAPI() {
                         source,
                         source,
                         link,
-                        referer = "$mainUrl/",
+                        referer = "",
                         quality = Qualities.P1080.value,
-                        isM3u8 = false,
+                        isM3u8 = true,
                     )
                 )
             }
