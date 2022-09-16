@@ -119,7 +119,7 @@ class Phim247Provider : MainAPI() {
         }
 
         return if (tvType == TvType.TvSeries) {
-            val main = app.get(link).document
+            val main = app.get(url).document
             val episodes = arrayListOf<Episode>()
             main.select("ul.list-episodes.row > li").forEach {
                 entry ->
